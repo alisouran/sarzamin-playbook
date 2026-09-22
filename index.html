@@ -6,356 +6,1043 @@
 <title>سرزمین — راهنمای تولید سه‌بعدی</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-/* ─── Reset & Base ─── */
+/* ═══════════════════════════════════════════════════════
+   Sarzamin 3D Production Playbook — Redesign
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Custom Properties ─── */
+:root {
+  /* palette */
+  --clay-900: #0d0a08;
+  --clay-800: #14100c;
+  --clay-700: #1c1712;
+  --clay-600: #2a221c;
+  --clay-500: #3d322a;
+  --clay-400: #5a4c42;
+  --clay-300: #8a7a6e;
+  --clay-200: #b8aea4;
+  --clay-100: #ddd6ce;
+  --clay-50:  #f0ebe6;
+
+  --gold-600: #8a7030;
+  --gold-500: #b8953e;
+  --gold-400: #c7a45b;
+  --gold-300: #d4b87a;
+  --gold-200: #e2cd99;
+
+  --lapis-800: #0f1f30;
+  --lapis-700: #162a40;
+  --lapis-600: #1e3a55;
+  --lapis-500: #2a4a6b;
+  --lapis-400: #3d6487;
+  --lapis-300: #5a80a3;
+
+  --stone-200: #d4c9b8;
+  --stone-300: #b8aea4;
+  --stone-400: #8a7e72;
+  --stone-500: #5c5248;
+
+  /* semantic */
+  --bg-page:          var(--clay-900);
+  --bg-elevated:      var(--clay-800);
+  --bg-card:          var(--clay-700);
+  --bg-nav:           rgba(12, 9, 7, 0.92);
+  --bg-code:          var(--clay-800);
+  --border-light:     rgba(255, 255, 255, 0.04);
+  --border-med:       rgba(255, 255, 255, 0.07);
+  --border-gold:      rgba(199, 164, 91, 0.18);
+  --text-primary:     var(--clay-50);
+  --text-secondary:   var(--stone-200);
+  --text-tertiary:    var(--stone-400);
+  --text-gold:        var(--gold-400);
+  --text-gold-bright: var(--gold-200);
+  --text-link:        var(--gold-400);
+
+  /* type scale */
+  --fs-xs:   0.75rem;
+  --fs-sm:   0.8125rem;
+  --fs-base: 1.0625rem;
+  --fs-md:   1.125rem;
+  --fs-lg:   1.35rem;
+  --fs-xl:   1.75rem;
+  --fs-2xl:  2.25rem;
+  --fs-hero: clamp(2.2rem, 5vw, 4rem);
+
+  --lh-tight:  1.25;
+  --lh-normal: 1.7;
+  --lh-loose:  1.9;
+
+  --fw-light:   300;
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-semibold: 600;
+  --fw-bold:   700;
+  --fw-extrabold: 800;
+  --fw-black:  900;
+
+  /* spacing */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* layout */
+  --content-max: 820px;
+  --nav-height: 56px;
+  --sidebar-width: 280px;
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+
+  /* motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 200ms;
+  --duration-normal: 400ms;
+  --duration-slow: 600ms;
+}
+
+/* ─── Reset ─── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+
+/* ─── Base ─── */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-height) + var(--space-6));
+}
 body {
   font-family: 'Vazirmatn', sans-serif;
-  background: #0d0d0d;
-  color: #e0dcd6;
-  line-height: 1.9;
-  font-weight: 350;
-  font-size: 1.05rem;
-  display: flex;
+  background: var(--bg-page);
+  color: var(--text-secondary);
+  line-height: var(--lh-loose);
+  font-size: var(--fs-base);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ─── Sidebar ─── */
-.sidebar {
+/* ─── Skip Link ─── */
+.skip-link {
   position: fixed;
-  top: 0; right: 0;
-  width: 300px;
-  height: 100vh;
-  background: #141414;
-  border-left: 1px solid #222;
-  overflow-y: auto;
-  padding: 1.8rem 0.8rem 2rem;
-  z-index: 100;
-  transform: translateX(0);
-  transition: transform 0.3s ease;
-}
-.sidebar::-webkit-scrollbar { width: 4px; }
-.sidebar::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-.sidebar-header {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #c7a45b;
-  margin-bottom: 1.2rem;
-  padding: 0 0.6rem 0.8rem;
-  border-bottom: 1px solid #222;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.sidebar-header span { font-size: 1.2rem; }
-.toc { list-style: none; }
-.toc li { margin: 0; }
-.toc a {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 10px 5px 0;
-  color: #777;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: 10000;
+  background: var(--gold-400);
+  color: var(--clay-900);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-sm);
   text-decoration: none;
-  font-size: 0.82rem;
-  font-weight: 400;
-  border-radius: 6px;
-  transition: all 0.15s;
-  line-height: 1.5;
+  transform: translateY(-120%);
+  transition: transform var(--duration-fast) var(--ease-out);
 }
-.toc a:hover { color: #c7a45b; background: #1a1a1a; }
-.toc a.active { color: #c7a45b; background: #1d1d1d; font-weight: 500; }
-.toc .toc-num {
-  font-size: 0.7rem;
-  color: #555;
-  min-width: 24px;
-  text-align: left;
-  font-family: monospace;
-}
-.toc .toc-h2 { padding-right: 8px; }
-.toc .toc-h3 a { padding-right: 28px; font-size: 0.77rem; }
-.toc .toc-h3 .toc-num { min-width: 18px; }
+.skip-link:focus { transform: translateY(0); }
 
-/* ─── Toggle Button ─── */
-.toggle-btn {
-  display: none;
+::selection { background: var(--gold-400); color: var(--clay-900); }
+:focus-visible { outline: 2px solid var(--gold-400); outline-offset: 3px; border-radius: var(--radius-sm); }
+
+/* ═══════════════════════════════════════════════════════
+   Top Navigation
+   ═══════════════════════════════════════════════════════ */
+.top-nav {
   position: fixed;
-  top: 14px; right: 14px;
-  z-index: 200;
-  background: #1a1a1a;
-  border: 1px solid #333;
-  color: #c7a45b;
-  width: 42px; height: 42px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 1.2rem;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  height: var(--nav-height);
+  background: var(--bg-nav);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-med);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-6);
+  gap: var(--space-4);
+}
+.top-nav-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: var(--fw-extrabold);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.top-nav-logo .logo-icon {
+  width: 28px; height: 28px;
+  border: 2px solid var(--gold-400);
+  border-radius: 6px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  font-size: var(--fs-xs);
+  color: var(--gold-400);
+  flex-shrink: 0;
 }
-.toggle-btn:hover { background: #222; }
-
-/* ─── Main Content ─── */
-.main {
+.top-nav-chapter {
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   flex: 1;
-  max-width: 820px;
-  margin-right: 340px;
-  margin-left: auto;
-  padding: 3rem 2.5rem 6rem;
+  text-align: center;
 }
-.main-header {
-  margin-bottom: 3rem;
-  border-bottom: 1px solid #1e1e1e;
-  padding-bottom: 2rem;
+.top-nav-chapter span { color: var(--text-gold); font-weight: var(--fw-medium); }
+.top-nav-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  direction: ltr;
 }
-.main-header h1 {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: #f0e8d8;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
+.top-nav-progress .progress-pct {
+  color: var(--text-gold);
+  font-weight: var(--fw-semibold);
+  min-width: 2.5em;
+  text-align: right;
 }
-.main-header .subtitle {
-  font-size: 0.95rem;
-  color: #666;
-  margin-top: 0.5rem;
+.top-nav-progress .progress-track {
+  width: 80px; height: 4px;
+  background: var(--border-med);
+  border-radius: 4px;
+  overflow: hidden;
 }
-.main-header .gold {
-  color: #c7a45b;
+.top-nav-progress .progress-fill {
+  height: 100%;
+  background: var(--gold-400);
+  width: 0%;
+  border-radius: 4px;
+  transition: width 150ms linear;
+}
+.nav-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--border-med);
+  color: var(--text-secondary);
+  width: 40px; height: 40px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--duration-fast) var(--ease-out);
+  font-size: var(--fs-lg);
+  line-height: 1;
+}
+.nav-toggle:hover { background: var(--bg-card); }
+
+/* ═══════════════════════════════════════════════════════
+   Sidebar / Chapter Navigator
+   ═══════════════════════════════════════════════════════ */
+.chapter-nav {
+  position: fixed;
+  top: var(--nav-height);
+  right: 0;
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--nav-height));
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--bg-elevated);
+  border-left: 1px solid var(--border-med);
+  padding: var(--space-6) var(--space-3) var(--space-12);
+  z-index: 400;
+  transition: transform var(--duration-normal) var(--ease-out);
+  scrollbar-width: thin;
+  scrollbar-color: var(--clay-500) transparent;
+}
+.chapter-nav::-webkit-scrollbar { width: 3px; }
+.chapter-nav::-webkit-scrollbar-thumb { background: var(--clay-500); border-radius: 3px; }
+.chapter-nav::-webkit-scrollbar-track { background: transparent; }
+.chapter-nav.open { transform: translateX(0); }
+
+.chapter-nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 399;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
-/* ─── Section Cards ─── */
-.section {
-  margin-bottom: 2.8rem;
-  padding: 1.8rem 2rem;
-  background: #121212;
-  border-radius: 14px;
-  border: 1px solid #1a1a1a;
-  transition: border-color 0.2s;
+.chapter-group { margin-bottom: var(--space-6); }
+.chapter-group-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--text-gold);
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: var(--space-1);
 }
-.section:hover { border-color: #242424; }
+.chapter-group-header .ch-num {
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+  font-weight: var(--fw-regular);
+  font-family: monospace;
+  direction: ltr;
+}
+.ch-nav-list { list-style: none; }
+.ch-nav-item { margin: 0; }
+.ch-nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  color: var(--text-tertiary);
+  text-decoration: none;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
+  border-radius: var(--radius-sm);
+  transition: all var(--duration-fast) var(--ease-out);
+  line-height: var(--lh-tight);
+}
+.ch-nav-link:hover {
+  color: var(--text-gold);
+  background: rgba(199, 164, 91, 0.06);
+}
+.ch-nav-link.active {
+  color: var(--text-gold-bright);
+  background: rgba(199, 164, 91, 0.1);
+  font-weight: var(--fw-medium);
+}
+.ch-nav-link .s-num {
+  font-size: 0.65rem;
+  color: var(--stone-500);
+  direction: ltr;
+  min-width: 1.8em;
+  text-align: left;
+  font-family: monospace;
+  opacity: 0.6;
+}
+.ch-nav-link.active .s-num { opacity: 1; color: var(--gold-500); }
+
+/* ═══════════════════════════════════════════════════════
+   Main Content
+   ═══════════════════════════════════════════════════════ */
+.main {
+  padding-top: var(--nav-height);
+  padding-right: var(--sidebar-width);
+  min-height: 100vh;
+}
+.main-inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-8) var(--space-24);
+}
+
+/* ─── Hero ─── */
+.hero {
+  position: relative;
+  padding: var(--space-20) 0 var(--space-16);
+  margin-bottom: var(--space-16);
+  text-align: center;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(199,164,91,0.03) 40px, rgba(199,164,91,0.03) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(199,164,91,0.03) 40px, rgba(199,164,91,0.03) 41px);
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--text-gold);
+  background: rgba(199, 164, 91, 0.08);
+  border: 1px solid var(--border-gold);
+  padding: var(--space-1) var(--space-4);
+  border-radius: 100px;
+  margin-bottom: var(--space-6);
+}
+.hero h1 {
+  font-size: var(--fs-hero);
+  font-weight: var(--fw-black);
+  color: var(--text-primary);
+  line-height: var(--lh-tight);
+  margin-bottom: var(--space-4);
+}
+.hero h1 .gold {
+  display: block;
+  background: linear-gradient(135deg, var(--gold-200), var(--gold-400), var(--gold-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p {
+  font-size: var(--fs-md);
+  color: var(--text-tertiary);
+  max-width: 540px;
+  margin: 0 auto var(--space-8);
+  line-height: var(--lh-normal);
+}
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+}
+.hero-stat { text-align: center; }
+.hero-stat-num {
+  display: block;
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-black);
+  color: var(--text-gold);
+  line-height: 1;
+  margin-bottom: var(--space-1);
+}
+.hero-stat-label {
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  font-weight: var(--fw-medium);
+}
+
+/* ─── Chapter Divider ─── */
+.chapter-divider {
+  position: relative;
+  margin: var(--space-20) 0 var(--space-12);
+  padding: var(--space-8) 0 var(--space-6);
+  border-top: 1px solid var(--border-med);
+}
+.chapter-divider::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--gold-400);
+}
+.chapter-divider-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--gold-500);
+  margin-bottom: var(--space-3);
+}
+.chapter-divider-label .ch-label-num {
+  background: rgba(199, 164, 91, 0.1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-family: monospace;
+  direction: ltr;
+  font-size: 0.7rem;
+}
+.chapter-divider h2 {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-extrabold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+.chapter-divider p {
+  font-size: var(--fs-sm);
+  color: var(--text-tertiary);
+  max-width: 600px;
+}
+
+/* ─── Sections ─── */
+.section {
+  margin-bottom: var(--space-8);
+  position: relative;
+}
 .section-header {
   display: flex;
   align-items: baseline;
-  gap: 12px;
-  margin-bottom: 1.2rem;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-light);
 }
 .section-num {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #c7a45b;
-  background: #1e1a10;
-  padding: 2px 10px;
-  border-radius: 6px;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--gold-400);
+  background: rgba(199, 164, 91, 0.06);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
   font-family: monospace;
+  direction: ltr;
   white-space: nowrap;
+  line-height: 1.8;
+  flex-shrink: 0;
 }
 .section h2 {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #f0e8d8;
-  line-height: 1.4;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  line-height: var(--lh-tight);
 }
-.section h3 {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #c7a45b;
-  margin: 1.5rem 0 0.6rem;
-}
-.section p { margin-bottom: 0.8rem; }
-.section p:last-child { margin-bottom: 0; }
-.section ul, .section ol { margin: 0.5rem 0 0.8rem 1.5rem; }
-.section li { margin-bottom: 0.3rem; }
-.section strong { color: #e8ddd0; font-weight: 600; }
-.section em { color: #c7a45b; font-style: normal; font-weight: 500; }
 
-/* ─── Code / Quotes ─── */
+/* ─── Content Elements ─── */
+.section p { margin-bottom: var(--space-4); }
+.section p:last-child { margin-bottom: 0; }
+.section ul, .section ol {
+  margin: var(--space-3) 0 var(--space-5);
+  padding-right: var(--space-6);
+}
+.section li { margin-bottom: var(--space-2); }
+.section li:last-child { margin-bottom: 0; }
+.section strong { color: var(--text-primary); font-weight: var(--fw-semibold); }
+.section em { color: var(--gold-400); font-style: normal; font-weight: var(--fw-medium); }
+.section h3 {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--gold-300);
+  margin: var(--space-6) 0 var(--space-3);
+  line-height: var(--lh-tight);
+}
+
+/* ─── Blockquote ─── */
+blockquote {
+  position: relative;
+  border-right: 2px solid var(--gold-400);
+  padding: var(--space-4) var(--space-6);
+  margin: var(--space-4) 0 var(--space-6);
+  background: var(--bg-elevated);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--text-secondary);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-normal);
+}
+blockquote strong { color: var(--text-gold); }
+
+/* ─── Code ─── */
 code {
-  font-family: 'Cascadia Code', 'Fira Code', monospace;
-  font-size: 0.82rem;
-  background: #1a1a1a;
-  color: #d4c9b8;
-  padding: 1px 7px;
-  border-radius: 5px;
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.8em;
+  background: var(--bg-code);
+  color: var(--gold-200);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
   direction: ltr;
   display: inline-block;
+  line-height: 1.5;
+  border: 1px solid var(--border-light);
 }
 pre {
   direction: ltr;
   text-align: left;
-  background: #0a0a0a;
-  border: 1px solid #1a1a1a;
-  border-radius: 10px;
-  padding: 1.2rem 1.5rem;
-  margin: 0.8rem 0 1.2rem;
+  background: var(--bg-code);
+  border: 1px solid var(--border-med);
+  border-radius: var(--radius-md);
+  padding: var(--space-5) var(--space-6);
+  margin: var(--space-4) 0 var(--space-6);
   overflow-x: auto;
-  font-size: 0.8rem;
-  line-height: 1.7;
-  color: #ccc;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-loose);
+  color: var(--stone-200);
 }
-pre code {
-  background: transparent;
-  padding: 0;
-}
-blockquote {
-  border-right: 3px solid #c7a45b;
-  padding: 0.8rem 1.2rem;
-  margin: 0.8rem 0;
-  background: #181818;
-  border-radius: 0 8px 8px 0;
-  color: #b8b0a4;
-  font-weight: 400;
-}
+pre code { background: transparent; padding: 0; border: none; font-size: inherit; color: inherit; }
 
 /* ─── Tables ─── */
 table {
   width: 100%;
-  border-collapse: collapse;
-  margin: 0.8rem 0 1.2rem;
-  font-size: 0.9rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: var(--space-4) 0 var(--space-6);
+  font-size: var(--fs-sm);
+  border: 1px solid var(--border-med);
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
 th, td {
-  border: 1px solid #222;
-  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--border-light);
+  border-left: 1px solid var(--border-light);
+  padding: var(--space-3) var(--space-4);
   text-align: right;
+  vertical-align: top;
 }
 th {
-  background: #1a1a1a;
-  color: #c7a45b;
-  font-weight: 600;
+  background: var(--bg-elevated);
+  color: var(--gold-300);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-xs);
 }
-td { color: #d0c8bc; }
+td { color: var(--text-secondary); }
+tr:last-child td { border-bottom: none; }
+td:last-child, th:last-child { border-left: none; }
 
 /* ─── Highlight Boxes ─── */
 .highlight-box {
-  background: #1a1610;
-  border: 1px solid #2a2218;
-  border-radius: 10px;
-  padding: 1.2rem 1.5rem;
-  margin: 1rem 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-md);
+  padding: var(--space-5) var(--space-6);
+  margin: var(--space-4) 0 var(--space-6);
 }
-.highlight-box.gold { border-color: #c7a45b33; }
+.highlight-box.gold {
+  border-color: var(--gold-400);
+  background: linear-gradient(135deg, rgba(199,164,91,0.04), rgba(199,164,91,0.01));
+}
+.highlight-box.warn {
+  border-color: rgba(255,180,50,0.2);
+  background: rgba(255,180,50,0.03);
+}
+
+/* ─── Cheatsheet ─── */
 .cheatsheet {
-  background: #0f0e0c;
-  border: 1px solid #c7a45b33;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin: 1.5rem 0;
-  font-size: 0.9rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-8);
+  margin: var(--space-6) 0;
+  font-size: var(--fs-sm);
   line-height: 2;
 }
+.cheatsheet pre {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--fs-xs);
+  line-height: 1.9;
+  color: var(--stone-200);
+}
 
-/* ─── Progress ─── */
-.reading-progress {
+/* ─── Phase List ─── */
+.phase-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-4) 0 var(--space-6);
+  counter-reset: phase-counter;
+}
+.phase-list li {
+  counter-increment: phase-counter;
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-3);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  transition: border-color var(--duration-fast) var(--ease-out);
+  align-items: flex-start;
+}
+.phase-list li:hover { border-color: var(--border-gold); }
+.phase-list li::before {
+  content: counter(phase-counter);
+  font-family: monospace;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--gold-400);
+  background: rgba(199,164,91,0.08);
+  width: 28px; height: 28px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  direction: ltr;
+}
+.phase-list li strong {
+  display: block;
+  color: var(--text-primary);
+  font-weight: var(--fw-semibold);
+  margin-bottom: var(--space-1);
+}
+
+/* ─── Misc Components ─── */
+.task-contract {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-med);
+  border-radius: var(--radius-md);
+  padding: var(--space-5) var(--space-6);
+  margin: var(--space-4) 0 var(--space-6);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+}
+.task-contract pre {
+  background: transparent; border: none; padding: 0; margin: 0; font-size: var(--fs-xs);
+}
+
+.prompt-example {
+  background: var(--clay-800);
+  border: 1px solid var(--border-med);
+  border-radius: var(--radius-md);
+  padding: var(--space-5) var(--space-6);
+  margin: var(--space-4) 0 var(--space-6);
+  font-size: var(--fs-sm);
+  position: relative;
+}
+.prompt-example::before {
+  content: 'نمونه پرامپت';
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-3);
+  font-size: 0.65rem;
+  font-weight: var(--fw-bold);
+  color: var(--gold-500);
+}
+.prompt-example pre {
+  background: transparent; border: none; padding: 0;
+  margin-top: var(--space-4); font-size: var(--fs-xs);
+}
+
+.milestone {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6);
+  margin: var(--space-4) 0 var(--space-6);
+  background: linear-gradient(135deg, rgba(199,164,91,0.04), transparent);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-md);
+}
+.milestone-icon {
+  width: 36px; height: 36px;
+  background: rgba(199,164,91,0.1);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: var(--fs-lg);
+}
+.milestone-content strong {
+  display: block;
+  color: var(--text-gold);
+  font-size: var(--fs-sm);
+  margin-bottom: var(--space-1);
+}
+.milestone-content p { font-size: var(--fs-sm); color: var(--text-tertiary); margin: 0; }
+
+.rule-card {
+  padding: var(--space-4) var(--space-5);
+  margin: var(--space-3) 0;
+  border-right: 2px solid var(--gold-400);
+  background: var(--bg-elevated);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.rule-card strong { color: var(--text-gold); }
+
+.example-bad {
+  background: rgba(180,80,60,0.04);
+  border: 1px solid rgba(180,80,60,0.12);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-6);
+  margin: var(--space-4) 0;
+  font-style: italic;
+  color: var(--stone-300);
+}
+.example-good {
+  background: rgba(199,164,91,0.04);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-6);
+  margin: var(--space-4) 0;
+  direction: ltr;
+  text-align: left;
+  color: var(--stone-200);
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  margin: var(--space-4) 0 var(--space-6);
+}
+.two-col > div {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+}
+.two-col h4 {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+}
+.two-col p { font-size: var(--fs-sm); color: var(--text-tertiary); }
+
+/* ─── Footer ─── */
+.footer {
+  margin-top: var(--space-20);
+  padding: var(--space-8) 0;
+  border-top: 1px solid var(--border-light);
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--text-tertiary);
+}
+.footer a { color: var(--text-gold); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+/* ─── Reading Progress ─── */
+.reading-progress-global {
   position: fixed;
-  top: 0; left: 0;
-  height: 3px;
-  background: #c7a45b;
-  z-index: 999;
+  top: var(--nav-height);
+  left: 0;
+  right: var(--sidebar-width);
+  height: 2px;
+  background: transparent;
+  z-index: 499;
+  pointer-events: none;
+}
+.reading-progress-global .rp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-400), var(--gold-200));
   width: 0%;
-  transition: width 0.1s;
+  transition: width 80ms linear;
 }
 
-/* ─── Responsive ─── */
-@media (max-width: 900px) {
-  .sidebar {
-    transform: translateX(300px);
-    width: 280px;
+/* ═══════════════════════════════════════════════════════
+   Animations
+   ═══════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: no-preference) {
+  .section.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity var(--duration-slow) var(--ease-out),
+                transform var(--duration-slow) var(--ease-out);
   }
-  .sidebar.open { transform: translateX(0); }
-  .toggle-btn { display: flex; }
-  .main {
-    margin-right: 0;
-    padding: 2.8rem 1.2rem 4rem;
+  .section.reveal.visible { opacity: 1; transform: translateY(0); }
+  .hero {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: heroIn var(--duration-slow) var(--ease-out) 0.1s forwards;
   }
-  .section { padding: 1.2rem 1rem; }
-  .main-header h1 { font-size: 1.6rem; }
-  pre { font-size: 0.72rem; padding: 1rem; }
+  @keyframes heroIn { to { opacity: 1; transform: translateY(0); } }
+  .chapter-divider.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity var(--duration-slow) var(--ease-out),
+                transform var(--duration-slow) var(--ease-out);
+  }
+  .chapter-divider.reveal.visible { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .section.reveal, .chapter-divider.reveal, .hero { opacity: 1; transform: none; animation: none; }
 }
 
-/* ─── Chevron icon ─── */
-.chevron { font-size: 0.6rem; color: #555; }
+/* ═══════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .main { padding-right: 0; }
+  .reading-progress-global { right: 0; }
+  .chapter-nav {
+    transform: translateX(100%);
+    width: 300px;
+    box-shadow: -8px 0 40px rgba(0,0,0,0.5);
+  }
+  .chapter-nav.open { transform: translateX(0); }
+  .chapter-nav-overlay.visible { display: block; }
+  .nav-toggle { display: flex; }
+}
+@media (max-width: 768px) {
+  .top-nav { padding: 0 var(--space-4); }
+  .top-nav-chapter { display: none; }
+  .top-nav-progress .progress-track { width: 60px; }
+  .main-inner { padding: var(--space-8) var(--space-4) var(--space-16); }
+  .hero { padding: var(--space-12) 0 var(--space-10); }
+  .hero-stats { gap: var(--space-5); }
+  .hero-stat-num { font-size: var(--fs-xl); }
+  .two-col { grid-template-columns: 1fr; }
+  .chapter-nav { width: 280px; }
+  .section-header { flex-wrap: wrap; }
+  .section-num { font-size: var(--fs-xs); }
+  pre { font-size: 0.7rem; padding: var(--space-4); }
+  table { font-size: var(--fs-xs); }
+  th, td { padding: var(--space-2) var(--space-3); }
+  .cheatsheet { padding: var(--space-4); }
+  .phase-list li { flex-direction: column; gap: var(--space-2); }
+  .highlight-box { padding: var(--space-4); }
+  blockquote { padding: var(--space-3) var(--space-4); }
+}
+@media (max-width: 480px) {
+  .main-inner { padding: var(--space-6) var(--space-3) var(--space-12); }
+  .top-nav-progress .progress-track { width: 40px; }
+  .hero-stat-num { font-size: var(--fs-lg); }
+  .hero-stats { gap: var(--space-4); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Print
+   ═══════════════════════════════════════════════════════ */
+@media print {
+  .top-nav, .chapter-nav, .chapter-nav-overlay,
+  .reading-progress-global, .nav-toggle { display: none !important; }
+  .main { padding: 0; }
+  .main-inner { max-width: 100%; padding: var(--space-4); }
+  .section { break-inside: avoid; }
+  pre { white-space: pre-wrap; word-break: break-word; }
+  blockquote { border-right: 2px solid #999; }
+  .hero::before { display: none; }
+  body { color: #111; background: #fff; }
+  .section h2, .hero h1, .chapter-divider h2,
+  strong { color: #111; }
+  td { color: #333; }
+  .section p { color: #333; }
+  .text-tertiary { color: #666; }
+  .section-num { color: #8a7030; }
+  .section-header { border-bottom-color: #ddd; }
+  .chapter-divider { border-top-color: #ccc; }
+  .chapter-divider::before { background: #8a7030; }
+  .highlight-box, .milestone, .cheatsheet,
+  .prompt-example, .task-contract { background: #f8f8f8; border-color: #ddd; }
+  pre { background: #f5f5f5; border-color: #ddd; color: #333; }
+  code { background: #f0f0f0; color: #555; }
+  table { border-color: #ddd; }
+  th { background: #f0f0f0; color: #333; }
+  td { border-color: #ddd; }
+  .phase-list li { background: #f8f8f8; border-color: #ddd; }
+  blockquote { background: #f8f8f8; color: #444; }
+  .hero h1 .gold {
+    -webkit-text-fill-color: #8a7030;
+    color: #8a7030;
+  }
+  .text-gold { color: #8a7030; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Utility
+   ═══════════════════════════════════════════════════════ */
+.ltr { direction: ltr; text-align: left; }
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
 </style>
 </head>
 <body>
+<!-- ═══ Skip Link ═══ -->
+<a href="#main-content" class="skip-link">پرش به محتوای اصلی</a>
 
-<div class="reading-progress" id="progress"></div>
+<!-- ═══ Reading Progress ═══ -->
+<div class="reading-progress-global" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="درصد پیشرفت مطالعه">
+  <div class="rp-fill" id="globalProgressFill"></div>
+</div>
 
-<!-- Sidebar -->
-<button class="toggle-btn" id="toggleSidebar" aria-label="باز و بسته کردن فهرست">☰</button>
-<nav class="sidebar" id="sidebar">
-  <div class="sidebar-header">
-    <span>📋</span> سرزمین — راهنما
+<!-- ═══ Top Navigation ═══ -->
+<header class="top-nav" role="banner">
+  <button class="nav-toggle" id="navToggle" aria-controls="chapterNav" aria-expanded="false" aria-label="باز کردن فهرست">
+    <span aria-hidden="true">☰</span>
+  </button>
+  <a href="#" class="top-nav-logo" aria-label="سرزمین — راهنمای تولید سه‌بعدی">
+    <span class="logo-icon" aria-hidden="true">⌂</span>
+    <span>سرزمین</span>
+  </a>
+  <div class="top-nav-chapter" id="currentChapter" aria-live="polite">
+    <span>۰</span> / ۵
   </div>
-  <ul class="toc" id="toc"></ul>
+  <div class="top-nav-progress">
+    <span class="progress-pct" id="progressPct">۰٪</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ Sidebar Overlay ═══ -->
+<div class="chapter-nav-overlay" id="navOverlay" aria-hidden="true"></div>
+
+<!-- ═══ Chapter Navigator ═══ -->
+<nav class="chapter-nav" id="chapterNav" aria-label="فهرست مطالب">
+  <div id="chapterNavContent"></div>
 </nav>
 
-<!-- Main -->
-<main class="main">
-  <header class="main-header">
-    <h1>Sarzamin<br><span class="gold">۳D Production Playbook</span></h1>
-    <div class="subtitle">از ایده تا مدل قابل قبول — راهنمای تولید سه‌بعدی سرزمین</div>
-  </header>
+<!-- ═══ Main Content ═══ -->
+<main class="main" id="main-content">
+  <div style="height:0"></div>
+  <div class="main-inner">
 
-  <!-- ============================================================ -->
-  <!-- 1 -->
-  <section class="section" id="s1">
-    <div class="section-header">
-      <span class="section-num">۱</span>
-      <h2>هدف این workflow</h2>
-    </div>
-    <p>هدف این نیست که به Hermes بگویی: «چغازنبیل رو بساز.»</p>
-    <p>هدف این است که یک asset پیچیده را به چند تصمیم کوچک، قابل‌اندازه‌گیری و قابل‌بررسی تقسیم کنی.</p>
-    <blockquote>چرخه‌ی اصلی همیشه این است: <strong>Brief → Plan → Approve → Implement → Execute → Preview → Review → Accept</strong></blockquote>
-    <p>و قانون اصلی:</p>
-    <blockquote><strong>هر Task فقط یک تغییر بصری قابل‌بررسی دارد.</strong></blockquote>
-  </section>
+    <!-- ════════════════════════════════════════════ -->
+    <!-- HERO -->
+    <!-- ════════════════════════════════════════════ -->
+    <header class="hero">
+      <div class="hero-badge"><span aria-hidden="true">◆</span> راهنمای تولید سه‌بعدی</div>
+      <h1>Sarzamin <span class="gold">۳D Production Playbook</span></h1>
+      <p>از ایده تا مدل قابل قبول — یک structured workflow برای تولید سه‌بعدی با هوش مصنوعی در Blender</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="hero-stat-num">۴۰</span><span class="hero-stat-label">گام عملی</span></div>
+        <div class="hero-stat"><span class="hero-stat-num">۵</span><span class="hero-stat-label">فصل</span></div>
+        <div class="hero-stat"><span class="hero-stat-num">⚡</span><span class="hero-stat-label">برگۀ تقلب</span></div>
+      </div>
+    </header>
 
-  <!-- 2 -->
-  <section class="section" id="s2">
-    <div class="section-header">
-      <span class="section-num">۲</span>
-      <h2>نقش تو چیست؟</h2>
+    <!-- ════════════════════════════════════════════ -->
+    <!-- CHAPTER 1 — Foundations -->
+    <!-- ════════════════════════════════════════════ -->
+    <div class="chapter-divider reveal" data-chapter="1">
+      <div class="chapter-divider-label"><span class="ch-label-num">فصل ۱</span> مبانی Workflow</div>
+      <h2>قبل از شروع مدل‌سازی</h2>
+      <p>هدف، نقش، نقطه شروع، ساختار پروژه و آماده‌سازی — چهارچوبی که هر تصمیم در مسیر تولید را هدایت می‌کند.</p>
     </div>
-    <p>تو قرار نیست Blender Artist حرفه‌ای باشی. نقش تو بیشتر شبیه این‌هاست:</p>
-    <p><strong>Director + Art Director + Technical Director</strong></p>
-    <p>تو باید بتوانی بگویی:</p>
-    <ul>
-      <li>چیزی که می‌خواهم چیست؟</li>
-      <li>چه چیزی در خروجی غلط است؟</li>
-      <li>چه چیزی هنوز نباید ساخته شود؟</li>
-      <li>آیا نسبت‌ها درست‌اند؟</li>
-      <li>آیا silhouette درست است؟</li>
-      <li>آیا دوربین چیزی را که می‌خواهم منتقل می‌کند؟</li>
-      <li>آیا جزئیات تاریخی واقعاً پشتوانه دارند؟</li>
-    </ul>
-    <p>لازم نیست بدانی برای درست‌کردن آن دقیقاً کدام <code>bpy</code> API باید استفاده شود. این وظیفه‌ی agent است.</p>
-  </section>
 
-  <!-- 3 -->
-  <section class="section" id="s3">
-    <div class="section-header">
-      <span class="section-num">۳</span>
-      <h2>برای چغازنبیل از کجا شروع کنیم؟</h2>
-    </div>
-    <p>از <strong>کل چغازنبیل</strong> شروع نکن. از <strong>شهر دوراونتاش</strong> هم شروع نکن. از landscape، درخت، مردم، لباس، آسمان و material هم شروع نکن.</p>
-    <p>اول فقط این سؤال را جواب بده:</p>
-    <blockquote>آیا می‌توانیم جرم اصلی و نسبت‌های زیگورات چغازنبیل را به شکل تاریخی قابل‌دفاع و بصری قابل‌قبول بسازیم؟</blockquote>
-    <p>پس اولین milestone: <strong>Chogha Zanbil — Ziggurat Reconstruction</strong></p>
-    <p>و اولین Task: <strong>Primary Blockout</strong></p>
-  </section>
+    <!-- 1 -->
+    <section class="section reveal" id="s1" data-chapter="1">
+      <div class="section-header"><span class="section-num">۱</span><h2>هدف این workflow</h2></div>
+      <p>هدف این نیست که به Hermes بگویی: «چغازنبیل رو بساز.»</p>
+      <p>هدف این است که یک asset پیچیده را به چند تصمیم کوچک، قابل‌اندازه‌گیری و قابل‌بررسی تقسیم کنی.</p>
+      <blockquote>چرخه‌ی اصلی همیشه این است: <strong>Brief → Plan → Approve → Implement → Execute → Preview → Review → Accept</strong></blockquote>
+      <p>و قانون اصلی:</p>
+      <div class="rule-card"><strong>هر Task فقط یک تغییر بصری قابل‌بررسی دارد.</strong></div>
+    </section>
 
-  <!-- 4 -->
-  <section class="section" id="s4">
-    <div class="section-header">
-      <span class="section-num">۴</span>
-      <h2>اول Prototype یا Production؟</h2>
-    </div>
-    <p>برای اولین آزمایش: <strong>Prototype Mode</strong></p>
-    <p>چون هنوز داری feasibility کل workflow را تست می‌کنی. فعلاً نیازی نداری MASTER scene، publish system، library management، elaborate backup pipeline و asset dependency graph.</p>
-    <p>ساختار ساده کافی است:</p>
-    <pre>chogha-zanbil/
+    <!-- 2 -->
+    <section class="section reveal" id="s2" data-chapter="1">
+      <div class="section-header"><span class="section-num">۲</span><h2>نقش تو چیست؟</h2></div>
+      <p>تو قرار نیست Blender Artist حرفه‌ای باشی. نقش تو بیشتر شبیه این‌هاست:</p>
+      <p><strong>Director + Art Director + Technical Director</strong></p>
+      <p>تو باید بتوانی بگویی:</p>
+      <ul>
+        <li>چیزی که می‌خواهم چیست؟</li>
+        <li>چه چیزی در خروجی غلط است؟</li>
+        <li>چه چیزی هنوز نباید ساخته شود؟</li>
+        <li>آیا نسبت‌ها درست‌اند؟</li>
+        <li>آیا silhouette درست است؟</li>
+        <li>آیا دوربین چیزی را که می‌خواهم منتقل می‌کند؟</li>
+        <li>آیا جزئیات تاریخی واقعاً پشتوانه دارند؟</li>
+      </ul>
+      <p>لازم نیست بدانی برای درست‌کردن آن دقیقاً کدام <code>bpy</code> API باید استفاده شود. این وظیفه‌ی agent است.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="section reveal" id="s3" data-chapter="1">
+      <div class="section-header"><span class="section-num">۳</span><h2>برای چغازنبیل از کجا شروع کنیم؟</h2></div>
+      <p>از <strong>کل چغازنبیل</strong> شروع نکن. از <strong>شهر دوراونتاش</strong> هم شروع نکن. از landscape، درخت، مردم، لباس، آسمان و material هم شروع نکن.</p>
+      <p>اول فقط این سؤال را جواب بده:</p>
+      <blockquote>آیا می‌توانیم جرم اصلی و نسبت‌های زیگورات چغازنبیل را به شکل تاریخی قابل‌دفاع و بصری قابل‌قبول بسازیم؟</blockquote>
+      <p>پس اولین milestone: <strong>Chogha Zanbil — Ziggurat Reconstruction</strong></p>
+      <p>و اولین Task: <strong>Primary Blockout</strong></p>
+    </section>
+
+    <!-- 4 -->
+    <section class="section reveal" id="s4" data-chapter="1">
+      <div class="section-header"><span class="section-num">۴</span><h2>اول Prototype یا Production؟</h2></div>
+      <p>برای اولین آزمایش: <strong>Prototype Mode</strong></p>
+      <p>چون هنوز داری feasibility کل workflow را تست می‌کنی. فعلاً نیازی نداری MASTER scene، publish system، library management، elaborate backup pipeline و asset dependency graph.</p>
+      <p>ساختار ساده کافی است:</p>
+      <pre>chogha-zanbil/
 ├── BLENDER_PROJECT.md
 ├── project_manifest.json
 ├── references/
@@ -364,24 +1051,18 @@ td { color: #d0c8bc; }
 ├── workfiles/
 ├── renders/
 └── temp/</pre>
-    <p>وقتی فهمیدی workflow جواب می‌دهد، پروژه را به Production ارتقا بده.</p>
-  </section>
+      <p>وقتی فهمیدی workflow جواب می‌دهد، پروژه را به Production ارتقا بده.</p>
+    </section>
 
-  <!-- 5 -->
-  <section class="section" id="s5">
-    <div class="section-header">
-      <span class="section-num">۵</span>
-      <h2>قبل از اولین مدل‌سازی چه چیزی آماده کنم؟</h2>
-    </div>
-
-    <h3>A. Historical References</h3>
-    <p>هر چیزی که به خود بنا مربوط است: پلان‌ها، اندازه‌ها، تصاویر حفاری، نقشه‌های باستان‌شناسی، مقالات، reconstructionهای دانشگاهی، عکس وضعیت فعلی. این‌ها <strong>evidence</strong> هستند.</p>
-
-    <h3>B. Visual References</h3>
-    <p>چیزهایی که فقط برای حس تصویر استفاده می‌شوند: نور، atmosphere، composition، cinematic references، material feeling. این‌ها evidence تاریخی نیستند. هرگز این دو گروه را با هم قاطی نکن.</p>
-
-    <h3>C. Measurement Sheet</h3>
-    <pre>known dimensions
+    <!-- 5 -->
+    <section class="section reveal" id="s5" data-chapter="1">
+      <div class="section-header"><span class="section-num">۵</span><h2>قبل از اولین مدل‌سازی چه چیزی آماده کنم؟</h2></div>
+      <h3>A. Historical References</h3>
+      <p>هر چیزی که به خود بنا مربوط است: پلان‌ها، اندازه‌ها، تصاویر حفاری، نقشه‌های باستان‌شناسی، مقالات، reconstructionهای دانشگاهی، عکس وضعیت فعلی. این‌ها <strong>evidence</strong> هستند.</p>
+      <h3>B. Visual References</h3>
+      <p>چیزهایی که فقط برای حس تصویر استفاده می‌شوند: نور، atmosphere، composition، cinematic references، material feeling. این‌ها evidence تاریخی نیستند. هرگز این دو گروه را با هم قاطی نکن.</p>
+      <h3>C. Measurement Sheet</h3>
+      <pre>known dimensions
 known footprint
 known orientation
 known level heights
@@ -390,28 +1071,34 @@ known wall thicknesses
 known openings
 unknown values
 conflicting measurements</pre>
+      <h3>D. Reconstruction Register</h3>
+      <p>برای تصمیم‌های مهم:</p>
+      <table>
+        <tr><th>Element</th><th>Class</th><th>Evidence</th><th>Alternatives</th><th>Risk</th></tr>
+        <tr><td colspan="5">کلاس‌ها:</td></tr>
+        <tr><td>A</td><td colspan="4">Documented</td></tr>
+        <tr><td>B</td><td colspan="4">Strong Reconstruction</td></tr>
+        <tr><td>C</td><td colspan="4">Plausible Reconstruction</td></tr>
+        <tr><td>D</td><td colspan="4">Speculative</td></tr>
+        <tr><td>X</td><td colspan="4">Counterfactual</td></tr>
+      </table>
+    </section>
 
-    <h3>D. Reconstruction Register</h3>
-    <p>برای تصمیم‌های مهم:</p>
-    <table>
-      <tr><th>Element</th><th>Class</th><th>Evidence</th><th>Alternatives</th><th>Risk</th></tr>
-      <tr><td colspan="5">کلاس‌ها:</td></tr>
-      <tr><td>A</td><td colspan="4">Documented</td></tr>
-      <tr><td>B</td><td colspan="4">Strong Reconstruction</td></tr>
-      <tr><td>C</td><td colspan="4">Plausible Reconstruction</td></tr>
-      <tr><td>D</td><td colspan="4">Speculative</td></tr>
-      <tr><td>X</td><td colspan="4">Counterfactual</td></tr>
-    </table>
-  </section>
-
-  <!-- 6 -->
-  <section class="section" id="s6">
-    <div class="section-header">
-      <span class="section-num">۶</span>
-      <h2>Project را به Hermes بسپار</h2>
+    <!-- ════════════════════════════════════════════ -->
+    <!-- CHAPTER 2 — Working with Agents -->
+    <!-- ════════════════════════════════════════════ -->
+    <div class="chapter-divider reveal" data-chapter="2">
+      <div class="chapter-divider-label"><span class="ch-label-num">فصل ۲</span> کار با عامل‌ها</div>
+      <h2>چگونه با Hermes، Sol و DeepSeek کار کنیم</h2>
+      <p>از تعریف Task تا Lock کردن Plan — مسیر درست تعامل با agentهای هوش مصنوعی.</p>
     </div>
-    <p>اولین prompt نباید درخواست مدل‌سازی باشد. به Hermes بگو:</p>
-    <pre>Use the blender-modeling skill.
+
+    <!-- 6 -->
+    <section class="section reveal" id="s6" data-chapter="2">
+      <div class="section-header"><span class="section-num">۶</span><h2>Project را به Hermes بسپار</h2></div>
+      <p>اولین prompt نباید درخواست مدل‌سازی باشد. به Hermes بگو:</p>
+      <div class="prompt-example">
+        <pre>Use the blender-modeling skill.
 
 Create a new Chogha Zanbil reconstruction project in Prototype mode.
 
@@ -426,27 +1113,23 @@ Blender runs on Mini.
 Canonical scripts and project code live on Azure.
 
 Report the created structure and any missing project configuration.</pre>
-    <p>بعد structure را نگاه کن. فعلاً هیچ مدل‌سازی نباید اتفاق افتاده باشد.</p>
-  </section>
+      </div>
+      <p>بعد structure را نگاه کن. فعلاً هیچ مدل‌سازی نباید اتفاق افتاده باشد.</p>
+    </section>
 
-  <!-- 7 -->
-  <section class="section" id="s7">
-    <div class="section-header">
-      <span class="section-num">۷</span>
-      <h2>اولین Task را تعریف کن</h2>
-    </div>
-    <p>Task اول: <code>CZ-ZIG-001</code> — <strong>Chogha Zanbil Ziggurat — Blockout</strong></p>
-    <p>Task Type: <code>Historical Reconstruction</code> &nbsp;|&nbsp; Phase: <code>Blockout</code></p>
-    <p>هدف فقط این است: حجم اصلی، footprint، orientation، تعداد سطوح قابل‌دفاع و نسبت کلی بنا ساخته شود. نه بیشتر.</p>
-  </section>
+    <!-- 7 -->
+    <section class="section reveal" id="s7" data-chapter="2">
+      <div class="section-header"><span class="section-num">۷</span><h2>اولین Task را تعریف کن</h2></div>
+      <p>Task اول: <code>CZ-ZIG-001</code> — <strong>Chogha Zanbil Ziggurat — Blockout</strong></p>
+      <p>Task Type: <code>Historical Reconstruction</code> &nbsp;|&nbsp; Phase: <code>Blockout</code></p>
+      <p>هدف فقط این است: حجم اصلی، footprint، orientation، تعداد سطوح قابل‌دفاع و نسبت کلی بنا ساخته شود. نه بیشتر.</p>
+    </section>
 
-  <!-- 8 -->
-  <section class="section" id="s8">
-    <div class="section-header">
-      <span class="section-num">۸</span>
-      <h2>Task Contract اول</h2>
-    </div>
-    <pre>Task ID:
+    <!-- 8 -->
+    <section class="section reveal" id="s8" data-chapter="2">
+      <div class="section-header"><span class="section-num">۸</span><h2>Task Contract اول</h2></div>
+      <div class="task-contract">
+        <pre>Task ID:
 CZ-ZIG-001
 
 Task Type:
@@ -495,17 +1178,16 @@ gpt-5.6-sol
 
 Implementation Model:
 DeepSeek-V4-Flash</pre>
-    <p>این چیزی است که scope را نجات می‌دهد.</p>
-  </section>
+      </div>
+      <p>این چیزی است که scope را نجات می‌دهد.</p>
+    </section>
 
-  <!-- 9 -->
-  <section class="section" id="s9">
-    <div class="section-header">
-      <span class="section-num">۹</span>
-      <h2>Planning Session</h2>
-    </div>
-    <p>حالا یک session برای <strong>Sol</strong> باز کن. اینجا implementation نمی‌خواهی.</p>
-    <pre>Use blender-modeling.
+    <!-- 9 -->
+    <section class="section reveal" id="s9" data-chapter="2">
+      <div class="section-header"><span class="section-num">۹</span><h2>Planning Session</h2></div>
+      <p>حالا یک session برای <strong>Sol</strong> باز کن. اینجا implementation نمی‌خواهی.</p>
+      <div class="prompt-example">
+        <pre>Use blender-modeling.
 
 Plan task CZ-ZIG-001 only.
 
@@ -534,67 +1216,75 @@ Expected Files
 Do Not Change
 Validation
 Unknowns</pre>
-  </section>
+      </div>
+    </section>
 
-  <!-- 10 -->
-  <section class="section" id="s10">
-    <div class="section-header">
-      <span class="section-num">۱۰</span>
-      <h2>در Planning Session دنبال چی بگردم؟</h2>
-    </div>
-    <p>تو لازم نیست کد را بررسی کنی. این‌ها را بررسی کن:</p>
-    <p><strong>آیا scope کوچیک مانده؟</strong><br>اگر نوشته «سپس material خشتی و erosion هم اضافه می‌کنیم...» ردش کن. بگو: <em>«Remove material and erosion work from this task. Keep the task strictly limited to primary blockout geometry.»</em></p>
-    <p><strong>آیا construction strategy منطقی است؟</strong><br>برای یک زیگورات dimensioned احتمالاً primitives + deterministic dimensions + repeated structures + modular objects + Blender Python. نه sculpting عجیب.</p>
-    <p><strong>آیا Unknownها را پنهان نکرده؟</strong><br>اگر ارتفاعی نامشخص است باید بگوید <code>Unknown</code>، نه اینکه خودش عدد بسازد.</p>
-  </section>
+    <!-- 10 -->
+    <section class="section reveal" id="s10" data-chapter="2">
+      <div class="section-header"><span class="section-num">۱۰</span><h2>در Planning Session دنبال چی بگردم؟</h2></div>
+      <p>تو لازم نیست کد را بررسی کنی. این‌ها را بررسی کن:</p>
+      <div class="milestone">
+        <div class="milestone-icon" aria-hidden="true">🔍</div>
+        <div class="milestone-content">
+          <strong>آیا scope کوچیک مانده؟</strong>
+          <p>اگر نوشته «سپس material خشتی و erosion هم اضافه می‌کنیم...» ردش کن. بگو: <em>«Remove material and erosion work from this task. Keep the task strictly limited to primary blockout geometry.»</em></p>
+        </div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-icon" aria-hidden="true">📐</div>
+        <div class="milestone-content">
+          <strong>آیا construction strategy منطقی است؟</strong>
+          <p>برای یک زیگورات dimensioned احتمالاً primitives + deterministic dimensions + repeated structures + modular objects + Blender Python.</p>
+        </div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-icon" aria-hidden="true">⚠️</div>
+        <div class="milestone-content">
+          <strong>آیا Unknownها را پنهان نکرده؟</strong>
+          <p>اگر ارتفاعی نامشخص است باید بگوید <code>Unknown</code>، نه اینکه خودش عدد بسازد.</p>
+        </div>
+      </div>
+    </section>
 
-  <!-- 11 -->
-  <section class="section" id="s11">
-    <div class="section-header">
-      <span class="section-num">۱۱</span>
-      <h2>چه زمانی Plan را Lock کنم؟</h2>
-    </div>
-    <p>وقتی این موارد مشخص‌اند:</p>
-    <ul>
-      <li>هدف</li>
-      <li>strategy</li>
-      <li>inputها</li>
-      <li>outputها</li>
-      <li>acceptance criteria</li>
-      <li>do-not-change</li>
-      <li>unknownها</li>
-    </ul>
-    <p>آن موقع بهش بگو:</p>
-    <blockquote>Plan approved. Treat this plan as locked for implementation. Do not redesign the geometry strategy unless implementation proves the plan impossible or contradictory.</blockquote>
-    <p>این <strong>Scope Lock</strong> است. از این لحظه DeepSeek اجازه ندارد وسط کار architectural design جدید اختراع کند.</p>
-  </section>
+    <!-- 11 -->
+    <section class="section reveal" id="s11" data-chapter="2">
+      <div class="section-header"><span class="section-num">۱۱</span><h2>چه زمانی Plan را Lock کنم؟</h2></div>
+      <p>وقتی این موارد مشخص‌اند:</p>
+      <ul>
+        <li>هدف</li>
+        <li>strategy</li>
+        <li>inputها</li>
+        <li>outputها</li>
+        <li>acceptance criteria</li>
+        <li>do-not-change</li>
+        <li>unknownها</li>
+      </ul>
+      <p>آن موقع بهش بگو:</p>
+      <blockquote>Plan approved. Treat this plan as locked for implementation. Do not redesign the geometry strategy unless implementation proves the plan impossible or contradictory.</blockquote>
+      <p>این <strong>Scope Lock</strong> است. از این لحظه DeepSeek اجازه ندارد وسط کار architectural design جدید اختراع کند.</p>
+    </section>
 
-  <!-- 12 -->
-  <section class="section" id="s12">
-    <div class="section-header">
-      <span class="section-num">۱۲</span>
-      <h2>حالا Session را عوض کن</h2>
-    </div>
-    <p>اینجا مهمه: <strong>Sol session را ادامه نده.</strong> یک session جدید با مدل <strong>DeepSeek V4 Flash</strong> بساز.</p>
-    <p>چرا؟ چون DeepSeek فقط باید این‌ها را ببیند:</p>
-    <ul>
-      <li>approved task plan</li>
-      <li>task contract</li>
-      <li>reference pack</li>
-      <li>project profile</li>
-      <li>start workfile</li>
-    </ul>
-    <p>لازم نیست کل بحث و کل exploration سول را بخواند.</p>
-  </section>
+    <!-- 12 -->
+    <section class="section reveal" id="s12" data-chapter="2">
+      <div class="section-header"><span class="section-num">۱۲</span><h2>حالا Session را عوض کن</h2></div>
+      <p>اینجا مهمه: <strong>Sol session را ادامه نده.</strong> یک session جدید با مدل <strong>DeepSeek V4 Flash</strong> بساز.</p>
+      <p>چرا؟ چون DeepSeek فقط باید این‌ها را ببیند:</p>
+      <ul>
+        <li>approved task plan</li>
+        <li>task contract</li>
+        <li>reference pack</li>
+        <li>project profile</li>
+        <li>start workfile</li>
+      </ul>
+      <p>لازم نیست کل بحث و کل exploration سول را بخواند.</p>
+    </section>
 
-  <!-- 13 -->
-  <section class="section" id="s13">
-    <div class="section-header">
-      <span class="section-num">۱۳</span>
-      <h2>Implementation Prompt</h2>
-    </div>
-    <p>در session جدید:</p>
-    <pre>Use blender-modeling.
+    <!-- 13 -->
+    <section class="section reveal" id="s13" data-chapter="2">
+      <div class="section-header"><span class="section-num">۱۳</span><h2>Implementation Prompt</h2></div>
+      <p>در session جدید:</p>
+      <div class="prompt-example">
+        <pre>Use blender-modeling.
 
 Implement the approved plan for CZ-ZIG-001.
 
@@ -626,62 +1316,58 @@ Produce only:
 
 Stop if required dimensions or evidence are missing.
 Do not invent missing historical values.</pre>
-    <p>این prompt عمداً boring است. خوبه که boring است. Implementation prompt نباید جای creativity باشد.</p>
-  </section>
+      </div>
+      <p>این prompt عمداً boring است. خوبه که boring است. Implementation prompt نباید جای creativity باشد.</p>
+    </section>
 
-  <!-- 14 -->
-  <section class="section" id="s14">
-    <div class="section-header">
-      <span class="section-num">۱۴</span>
-      <h2>سه نوع Lock</h2>
+    <!-- ════════════════════════════════════════════ -->
+    <!-- CHAPTER 3 — Lock & Review -->
+    <!-- ════════════════════════════════════════════ -->
+    <div class="chapter-divider reveal" data-chapter="3">
+      <div class="chapter-divider-label"><span class="ch-label-num">فصل ۳</span> قفل، بررسی و بازخورد</div>
+      <h2>چطور مطمئن شویم مسیر درست می‌رویم</h2>
+      <p>سه نوع Lock، روش Review، Feedback مؤثر، Correction Strategy و پایان Task.</p>
     </div>
-    <h3>۱. Scope Lock</h3>
-    <p>بعد از approve شدن Plan. یعنی: دیگر strategy را بدون دلیل عوض نکن.</p>
 
-    <h3>۲. Workfile Lock</h3>
-    <p>وقتی agent قرار است یک authoritative WIP را تغییر دهد. در Production: acquire lock → mutate WIP → save new version → finish execution → release lock. اگر یک agent روی <code>SRZ_CZ_Ziggurat_Primary_v004.blend</code> کار می‌کند، هیچ agent دیگری همزمان writer همان workfile نباشد.</p>
+    <!-- 14 -->
+    <section class="section reveal" id="s14" data-chapter="3">
+      <div class="section-header"><span class="section-num">۱۴</span><h2>سه نوع Lock</h2></div>
+      <h3>۱. Scope Lock</h3>
+      <p>بعد از approve شدن Plan. یعنی: دیگر strategy را بدون دلیل عوض نکن.</p>
+      <h3>۲. Workfile Lock</h3>
+      <p>وقتی agent قرار است یک authoritative WIP را تغییر دهد. در Production: acquire lock → mutate WIP → save new version → finish execution → release lock. اگر یک agent روی <code>SRZ_CZ_Ziggurat_Primary_v004.blend</code> کار می‌کند، هیچ agent دیگری همزمان writer همان workfile نباشد.</p>
+      <h3>۳. Approval Lock</h3>
+      <p>وقتی phase قبول شد. این snapshot دیگر نباید تغییر کند. مرحله بعد از آن fork می‌شود.</p>
+    </section>
 
-    <h3>۳. Approval Lock</h3>
-    <p>وقتی phase قبول شد. این snapshot دیگر نباید تغییر کند. مرحله بعد از آن fork می‌شود.</p>
-  </section>
+    <!-- 15 -->
+    <section class="section reveal" id="s15" data-chapter="3">
+      <div class="section-header"><span class="section-num">۱۵</span><h2>اولین خروجی چه شکلی باید باشد؟</h2></div>
+      <p>احتمالاً <strong>زشت</strong>. و این کاملاً درست است.</p>
+      <p>انتظار این چیزها را نداشته باش: نور سینمایی، بافت خشتی جذاب، erosion، خاک، درخت، آدم، آسمان، مه، جزئیات معماری، dramatic composition.</p>
+      <p>باید چیزی شبیه یک مدل خاکستری تمیز ببینی. اما وقتی آن را از دور نگاه می‌کنی باید بگویی: «آره، فرم و scale چغازنبیل داره درمیاد.» این موفقیت Phase 1 است.</p>
+    </section>
 
-  <!-- 15 -->
-  <section class="section" id="s15">
-    <div class="section-header">
-      <span class="section-num">۱۵</span>
-      <h2>اولین خروجی چه شکلی باید باشد؟</h2>
-    </div>
-    <p>احتمالاً <strong>زشت</strong>. و این کاملاً درست است.</p>
-    <p>انتظار این چیزها را نداشته باش: نور سینمایی، بافت خشتی جذاب، erosion، خاک، درخت، آدم، آسمان، مه، جزئیات معماری، dramatic composition.</p>
-    <p>باید چیزی شبیه یک مدل خاکستری تمیز ببینی. اما وقتی آن را از دور نگاه می‌کنی باید بگویی: «آره، فرم و scale چغازنبیل داره درمیاد.» این موفقیت Phase 1 است.</p>
-  </section>
+    <!-- 16 -->
+    <section class="section reveal" id="s16" data-chapter="3">
+      <div class="section-header"><span class="section-num">۱۶</span><h2>چطور Review کنم؟</h2></div>
+      <ol>
+        <li><strong>Silhouette</strong> — اگر silhouette غلط است: هیچ چیز دیگری مهم نیست.</li>
+        <li><strong>Overall Proportions</strong> — عرض، ارتفاع، levelها.</li>
+        <li><strong>Major Negative Spaces</strong> — فضاها، مسیرها، بازشوهای اصلی.</li>
+        <li><strong>Rhythm</strong> — تکرارها، پله‌ها، دیوارها.</li>
+        <li><strong>Detail</strong> — آخر کار.</li>
+      </ol>
+    </section>
 
-  <!-- 16 -->
-  <section class="section" id="s16">
-    <div class="section-header">
-      <span class="section-num">۱۶</span>
-      <h2>چطور Review کنم؟</h2>
-    </div>
-    <ol>
-      <li><strong>Silhouette</strong> — اگر silhouette غلط است: هیچ چیز دیگری مهم نیست.</li>
-      <li><strong>Overall Proportions</strong> — عرض، ارتفاع، levelها.</li>
-      <li><strong>Major Negative Spaces</strong> — فضاها، مسیرها، بازشوهای اصلی.</li>
-      <li><strong>Rhythm</strong> — تکرارها، پله‌ها، دیوارها.</li>
-      <li><strong>Detail</strong> — آخر کار.</li>
-    </ol>
-  </section>
-
-  <!-- 17 -->
-  <section class="section" id="s17">
-    <div class="section-header">
-      <span class="section-num">۱۷</span>
-      <h2>Feedback بد و خوب</h2>
-    </div>
-    <p>این بد است:</p>
-    <blockquote>«خیلی عجیب شده. یه چیزیش بده. درستش کن.»</blockquote>
-    <p>Agent نمی‌داند چه کاری بکند.</p>
-    <p>این بهتر است:</p>
-    <pre>The overall silhouette is close.
+    <!-- 17 -->
+    <section class="section reveal" id="s17" data-chapter="3">
+      <div class="section-header"><span class="section-num">۱۷</span><h2>Feedback بد و خوب</h2></div>
+      <p>این بد است:</p>
+      <div class="example-bad">«خیلی عجیب شده. یه چیزیش بده. درستش کن.»</div>
+      <p>Agent نمی‌داند چه کاری بکند.</p>
+      <p>این بهتر است:</p>
+      <div class="example-good">The overall silhouette is close.
 
 The upper mass appears too narrow relative to the lower body.
 
@@ -690,20 +1376,18 @@ Keep the footprint and lower levels unchanged.
 Review only the width progression of the upper levels against
 the approved references.
 
-Do not change stairs or orientation.</pre>
-    <p>این feedback <strong>bounded</strong> است.</p>
-  </section>
+Do not change stairs or orientation.</div>
+      <p>این feedback <strong>bounded</strong> است.</p>
+    </section>
 
-  <!-- 18 -->
-  <section class="section" id="s18">
-    <div class="section-header">
-      <span class="section-num">۱۸</span>
-      <h2>Correction Strategy</h2>
-    </div>
-    <p><strong>Correction را در همان Session انجام بده.</strong> اگر همان مشکل است: Blockout → correction 1 → correction 2 در همان DeepSeek session بمان. اما بیشتر از <strong>دو correction برای یک mismatch ساختاری</strong> انجام نده.</p>
-    <p><strong>اگر DeepSeek دو بار خراب کرد؟</strong> بار سوم بهش نگو «دوباره امتحان کن.» Stop. مشکل را classify کن: implementation problem؟ planning problem؟ missing reference؟ contradictory evidence؟ runtime bug؟</p>
-    <p>اگر strategy مشکل داشت: برگرد Sol/Astra با session تازه:</p>
-    <pre>The implementation failed twice to produce the required
+    <!-- 18 -->
+    <section class="section reveal" id="s18" data-chapter="3">
+      <div class="section-header"><span class="section-num">۱۸</span><h2>Correction Strategy</h2></div>
+      <p><strong>Correction را در همان Session انجام بده.</strong> اگر همان مشکل است: Blockout → correction 1 → correction 2 در همان DeepSeek session بمان. اما بیشتر از <strong>دو correction برای یک mismatch ساختاری</strong> انجام نده.</p>
+      <p><strong>اگر DeepSeek دو بار خراب کرد؟</strong> بار سوم بهش نگو «دوباره امتحان کن.» Stop. مشکل را classify کن: implementation problem؟ planning problem؟ missing reference؟ contradictory evidence؟ runtime bug؟</p>
+      <p>اگر strategy مشکل داشت: برگرد Sol/Astra با session تازه:</p>
+      <div class="prompt-example">
+        <pre>The implementation failed twice to produce the required
 stepped proportion.
 
 Do not implement.
@@ -713,102 +1397,88 @@ Analyze the approved plan and the two review failures.
 Determine whether the geometry strategy is wrong.
 
 Return only a revised implementation strategy.</pre>
-    <p>بعد plan جدید را approve کن. بعد دوباره DeepSeek session تازه.</p>
-  </section>
+      </div>
+      <p>بعد plan جدید را approve کن. بعد دوباره DeepSeek session تازه.</p>
+    </section>
 
-  <!-- 19 -->
-  <section class="section" id="s19">
-    <div class="section-header">
-      <span class="section-num">۱۹</span>
-      <h2>کی Task تمام شده؟</h2>
-    </div>
-    <p>وقتی <strong>acceptance criteria همین Task</strong> پاس شده. نه وقتی مدل کامل شده.</p>
-    <p>مثلاً اگر Blockout درست شد: <strong>CZ-ZIG-001 تمام است.</strong> حتی اگر مدل هنوز زشت است. این دقیقاً چیزیه که باید یاد بگیری.</p>
-  </section>
+    <!-- 19 -->
+    <section class="section reveal" id="s19" data-chapter="3">
+      <div class="section-header"><span class="section-num">۱۹</span><h2>کی Task تمام شده؟</h2></div>
+      <p>وقتی <strong>acceptance criteria همین Task</strong> پاس شده. نه وقتی مدل کامل شده.</p>
+      <p>مثلاً اگر Blockout درست شد: <strong>CZ-ZIG-001 تمام است.</strong> حتی اگر مدل هنوز زشت است. این دقیقاً چیزیه که باید یاد بگیری.</p>
+    </section>
 
-  <!-- 20 -->
-  <section class="section" id="s20">
-    <div class="section-header">
-      <span class="section-num">۲۰</span>
-      <h2>بعد از قبول Task چه کنم؟</h2>
-    </div>
-    <p><strong>Prototype:</strong> ذخیره کن <code>SRZ_CZ_Ziggurat_Blockout_v003.blend</code> و review notes. بعد source/script/task files را checkpoint یا commit کن.</p>
-    <p><strong>Production:</strong> WIP → REVIEW → validate from REVIEW → APPROVED. بعد commit.</p>
-  </section>
+    <!-- 20 -->
+    <section class="section reveal" id="s20" data-chapter="3">
+      <div class="section-header"><span class="section-num">۲۰</span><h2>بعد از قبول Task چه کنم؟</h2></div>
+      <p><strong>Prototype:</strong> ذخیره کن <code>SRZ_CZ_Ziggurat_Blockout_v003.blend</code> و review notes. بعد source/script/task files را checkpoint یا commit کن.</p>
+      <p><strong>Production:</strong> WIP → REVIEW → validate from REVIEW → APPROVED. بعد commit.</p>
+    </section>
 
-  <!-- 21 -->
-  <section class="section" id="s21">
-    <div class="section-header">
-      <span class="section-num">۲۱</span>
-      <h2>Commit کی بزنم؟</h2>
-    </div>
-    <p>بعد از <strong>Accepted Task Boundary</strong>. نه بعد از هر prompt. نه بعد از هر render. نه بعد از هر script run.</p>
-    <p>مثلاً: <code>feat(cz): approve ziggurat blockout</code>. بعد phase جدید شروع شود.</p>
-  </section>
+    <!-- 21 -->
+    <section class="section reveal" id="s21" data-chapter="3">
+      <div class="section-header"><span class="section-num">۲۱</span><h2>Commit کی بزنم؟</h2></div>
+      <p>بعد از <strong>Accepted Task Boundary</strong>. نه بعد از هر prompt. نه بعد از هر render. نه بعد از هر script run.</p>
+      <p>مثلاً: <code>feat(cz): approve ziggurat blockout</code>. بعد phase جدید شروع شود.</p>
+    </section>
 
-  <!-- 22 -->
-  <section class="section" id="s22">
-    <div class="section-header">
-      <span class="section-num">۲۲</span>
-      <h2>Session جدید کی بسازم؟</h2>
-    </div>
-    <p><strong>همان Session بمان اگر:</strong> همان Task است، همان phase است، فقط feedback می‌دهی، correction اول یا دوم است، objective تغییر نکرده.</p>
-    <p><strong>Session جدید بساز اگر:</strong> phase تمام شد، task جدید شروع شد، از Sol به DeepSeek رفتی، از Blender به Unreal رفتی، objective تغییر کرد، agent اشتباه قبلی را دوباره تکرار کرد، context پر از راه‌های ردشده شده، حس کردی مدل دیگر task را تمیز نمی‌فهمد.</p>
-    <blockquote>قاعده‌ی ساده: <strong>هر Accepted Phase = یک Session Boundary خوب.</strong></blockquote>
-  </section>
+    <!-- 22 -->
+    <section class="section reveal" id="s22" data-chapter="3">
+      <div class="section-header"><span class="section-num">۲۲</span><h2>Session جدید کی بسازم؟</h2></div>
+      <p><strong>همان Session بمان اگر:</strong> همان Task است، همان phase است، فقط feedback می‌دهی، correction اول یا دوم است، objective تغییر نکرده.</p>
+      <p><strong>Session جدید بساز اگر:</strong> phase تمام شد، task جدید شروع شد، از Sol به DeepSeek رفتی، از Blender به Unreal رفتی، objective تغییر کرد، agent اشتباه قبلی را دوباره تکرار کرد، context پر از راه‌های ردشده شده، حس کردی مدل دیگر task را تمیز نمی‌فهمد.</p>
+      <blockquote>قاعده‌ی ساده: <strong>هر Accepted Phase = یک Session Boundary خوب.</strong></blockquote>
+    </section>
 
-  <!-- 23 -->
-  <section class="section" id="s23">
-    <div class="section-header">
-      <span class="section-num">۲۳</span>
-      <h2>Task دوم چغازنبیل</h2>
+    <!-- ════════════════════════════════════════════ -->
+    <!-- CHAPTER 4 — Production Pipeline -->
+    <!-- ════════════════════════════════════════════ -->
+    <div class="chapter-divider reveal" data-chapter="4">
+      <div class="chapter-divider-label"><span class="ch-label-num">فصل ۴</span> خط تولید</div>
+      <h2>از Task دوم تا Shot نهایی</h2>
+      <p>Asset pipeline، محیط، انتقال به Unreal، Camera، Shot workflow و انتخاب مدل مناسب.</p>
     </div>
-    <p>بعد از قبول Blockout: <code>CZ-ZIG-002</code> — Phase: <strong>Primary Forms</strong></p>
-    <p>Start Workfile: accepted blockout</p>
-    <p>هدف: تبدیل جرم اولیه به ساختار اصلی معماری بدون ورود به جزئیات ثانویه.</p>
-    <p>دوباره: Plan → Approve → new DeepSeek session → Implement → Preview → Review → Accept</p>
-  </section>
 
-  <!-- 24 -->
-  <section class="section" id="s24">
-    <div class="section-header">
-      <span class="section-num">۲۴</span>
-      <h2>کل مراحل Asset چغازنبیل</h2>
-    </div>
-    <ol>
-      <li><strong>Phase 1 — Blockout:</strong> فقط footprint، orientation، overall scale، primary levels، silhouette</li>
-      <li><strong>Phase 2 — Primary Forms:</strong> main structural masses، terraces، principal circulation، major stair systems، main walls</li>
-      <li><strong>Phase 3 — Structural Detail:</strong> stair rhythm، openings، structural wall subdivisions، major entrances، architectural repetition</li>
-      <li><strong>Phase 4 — Secondary Detail:</strong> secondary structures، minor architectural elements، evidenced surface construction، smaller circulation elements</li>
-      <li><strong>Phase 5 — Ornament:</strong> فقط چیزهایی که evidence مناسب دارند. هیچ «این خوشگل میشه، بذار اضافه کنیم» پذیرفته نیست.</li>
-      <li><strong>Phase 6 — Lookdev:</strong> brick، mud brick، plaster، weathering، color range، roughness، material variation</li>
-      <li><strong>Phase 7 — Approved Asset:</strong> Asset تاریخی آماده‌ی استفاده در scene است</li>
-    </ol>
-  </section>
+    <!-- 23 -->
+    <section class="section reveal" id="s23" data-chapter="4">
+      <div class="section-header"><span class="section-num">۲۳</span><h2>Task دوم چغازنبیل</h2></div>
+      <p>بعد از قبول Blockout: <code>CZ-ZIG-002</code> — Phase: <strong>Primary Forms</strong></p>
+      <p>Start Workfile: accepted blockout</p>
+      <p>هدف: تبدیل جرم اولیه به ساختار اصلی معماری بدون ورود به جزئیات ثانویه.</p>
+      <p>دوباره: Plan → Approve → new DeepSeek session → Implement → Preview → Review → Accept</p>
+    </section>
 
-  <!-- 25 -->
-  <section class="section" id="s25">
-    <div class="section-header">
-      <span class="section-num">۲۵</span>
-      <h2>محیط را همزمان نساز</h2>
-    </div>
-    <p>بعد از خود زیگورات، Taskهای جدا:</p>
-    <pre>CZ-ENV-001  Site terrain
+    <!-- 24 -->
+    <section class="section reveal" id="s24" data-chapter="4">
+      <div class="section-header"><span class="section-num">۲۴</span><h2>کل مراحل Asset چغازنبیل</h2></div>
+      <ol class="phase-list">
+        <li><strong>Phase 1 — Blockout:</strong> فقط footprint، orientation، overall scale، primary levels، silhouette</li>
+        <li><strong>Phase 2 — Primary Forms:</strong> main structural masses، terraces، principal circulation، major stair systems، main walls</li>
+        <li><strong>Phase 3 — Structural Detail:</strong> stair rhythm، openings، structural wall subdivisions، major entrances، architectural repetition</li>
+        <li><strong>Phase 4 — Secondary Detail:</strong> secondary structures، minor architectural elements، evidenced surface construction، smaller circulation elements</li>
+        <li><strong>Phase 5 — Ornament:</strong> فقط چیزهایی که evidence مناسب دارند. هیچ «این خوشگل میشه، بذار اضافه کنیم» پذیرفته نیست.</li>
+        <li><strong>Phase 6 — Lookdev:</strong> brick، mud brick، plaster، weathering، color range، roughness، material variation</li>
+        <li><strong>Phase 7 — Approved Asset:</strong> Asset تاریخی آماده‌ی استفاده در scene است</li>
+      </ol>
+    </section>
+
+    <!-- 25 -->
+    <section class="section reveal" id="s25" data-chapter="4">
+      <div class="section-header"><span class="section-num">۲۵</span><h2>محیط را همزمان نساز</h2></div>
+      <p>بعد از خود زیگورات، Taskهای جدا:</p>
+      <pre>CZ-ENV-001  Site terrain
 CZ-ENV-002  Outer architectural context
 CZ-ENV-003  Vegetation reconstruction
 CZ-ENV-004  Population / props layer</pre>
-    <p>هرکدام review جدا.</p>
-  </section>
+      <p>هرکدام review جدا.</p>
+    </section>
 
-  <!-- 26 -->
-  <section class="section" id="s26">
-    <div class="section-header">
-      <span class="section-num">۲۶</span>
-      <h2>Blender تا کجا؟ Unreal از کجا؟</h2>
-    </div>
-    <p><strong>Blender</strong> برای: historical asset reconstruction، architecture، reusable props، geometry، precise modeling، scripted procedural structures، asset preparation</p>
-    <p><strong>Unreal</strong> برای: world assembly، landscape، large vegetation، atmosphere، lighting، crowds، characters، cinematic blocking، Sequencer، CineCamera، final shot، realtime iteration</p>
-    <pre>Chogha Zanbil asset
+    <!-- 26 -->
+    <section class="section reveal" id="s26" data-chapter="4">
+      <div class="section-header"><span class="section-num">۲۶</span><h2>Blender تا کجا؟ Unreal از کجا؟</h2></div>
+      <p><strong>Blender</strong> برای: historical asset reconstruction، architecture، reusable props، geometry، precise modeling، scripted procedural structures، asset preparation</p>
+      <p><strong>Unreal</strong> برای: world assembly، landscape، large vegetation، atmosphere، lighting، crowds، characters، cinematic blocking، Sequencer، CineCamera، final shot، realtime iteration</p>
+      <pre>Chogha Zanbil asset
         ↓
      Blender
         ↓
@@ -819,25 +1489,20 @@ CZ-ENV-004  Population / props layer</pre>
 World + Character + Camera
         ↓
    Sarzamin Shot</pre>
-  </section>
+    </section>
 
-  <!-- 27 -->
-  <section class="section" id="s27">
-    <div class="section-header">
-      <span class="section-num">۲۷</span>
-      <h2>ساخت اولین شات هم همین workflow را دارد</h2>
-    </div>
-    <p>مرحله‌ها: Shot Brief → Scene Blocking → Camera / Lens → Timing / Camera Motion → Character Blocking → Lighting → Environment Polish → Final Render</p>
-    <p>مثلاً <code>SH010</code> اول: Scene Blocking. نه Final Shot.</p>
-  </section>
+    <!-- 27 -->
+    <section class="section reveal" id="s27" data-chapter="4">
+      <div class="section-header"><span class="section-num">۲۷</span><h2>ساخت اولین شات هم همین workflow را دارد</h2></div>
+      <p>مرحله‌ها: Shot Brief → Scene Blocking → Camera / Lens → Timing / Camera Motion → Character Blocking → Lighting → Environment Polish → Final Render</p>
+      <p>مثلاً <code>SH010</code> اول: Scene Blocking. نه Final Shot.</p>
+    </section>
 
-  <!-- 28 -->
-  <section class="section" id="s28">
-    <div class="section-header">
-      <span class="section-num">۲۸</span>
-      <h2>برای Camera Task چی بگویم؟</h2>
-    </div>
-    <pre>Use the approved environment and assets.
+    <!-- 28 -->
+    <section class="section reveal" id="s28" data-chapter="4">
+      <div class="section-header"><span class="section-num">۲۸</span><h2>برای Camera Task چی بگویم؟</h2></div>
+      <div class="prompt-example">
+        <pre>Use the approved environment and assets.
 
 Task: SH010 Camera / Lens.
 
@@ -858,68 +1523,64 @@ scene geometry.
 Explain the spatial difference between them.
 
 Do not select a winner automatically.</pre>
-  </section>
+      </div>
+    </section>
 
-  <!-- 29 -->
-  <section class="section" id="s29">
-    <div class="section-header">
-      <span class="section-num">۲۹</span>
-      <h2>Planner: Sol یا Astra؟</h2>
-    </div>
-    <p><strong>Sol</strong> — default خوب برای: task decomposition، architecture strategy، ambiguous reconstruction، camera planning، pipeline decisions، debugging strategy، deciding Blender vs Unreal</p>
-    <p><strong>Astra</strong> — اگر تجربه‌ات نشان داد در این‌ها بهتر است: geometry-heavy problem، spatial relationships، difficult reference fitting، complex architectural reasoning</p>
-  </section>
+    <!-- 29 -->
+    <section class="section reveal" id="s29" data-chapter="4">
+      <div class="section-header"><span class="section-num">۲۹</span><h2>Planner: Sol یا Astra؟</h2></div>
+      <p><strong>Sol</strong> — default خوب برای: task decomposition، architecture strategy، ambiguous reconstruction، camera planning، pipeline decisions، debugging strategy، deciding Blender vs Unreal</p>
+      <p><strong>Astra</strong> — اگر تجربه‌ات نشان داد در این‌ها بهتر است: geometry-heavy problem، spatial relationships، difficult reference fitting، complex architectural reasoning</p>
+    </section>
 
-  <!-- 30 -->
-  <section class="section" id="s30">
-    <div class="section-header">
-      <span class="section-num">۳۰</span>
-      <h2>DeepSeek را برای چه چیزی نگه دارم؟</h2>
-    </div>
-    <p>برای execution: bpy scripts، primitive construction, transforms, arrays، repeated architecture, collection management, deterministic placement, export preparation, camera setup, simple procedural generation, fixes با strategy مشخص</p>
-    <p>DeepSeek نباید دوباره تبدیل به Architect پروژه شود.</p>
-  </section>
+    <!-- 30 -->
+    <section class="section reveal" id="s30" data-chapter="4">
+      <div class="section-header"><span class="section-num">۳۰</span><h2>DeepSeek را برای چه چیزی نگه دارم؟</h2></div>
+      <p>برای execution: bpy scripts، primitive construction, transforms, arrays، repeated architecture, collection management, deterministic placement, export preparation, camera setup, simple procedural generation, fixes با strategy مشخص</p>
+      <p>DeepSeek نباید دوباره تبدیل به Architect پروژه شود.</p>
+    </section>
 
-  <!-- 31 -->
-  <section class="section" id="s31">
-    <div class="section-header">
-      <span class="section-num">۳۱</span>
-      <h2>چه زمانی Sol را برای Implementation استفاده کنم؟</h2>
-    </div>
-    <p>فقط وقتی implementation خودش سخت شده: procedural geometry پیچیده، topology-sensitive work، boolean interaction سخت، mathematical mesh generation، script architecture پیچیده، DeepSeek دوبار strategy درست را اشتباه اجرا کرده. نه صرفاً چون asset بزرگ است.</p>
-  </section>
+    <!-- 31 -->
+    <section class="section reveal" id="s31" data-chapter="4">
+      <div class="section-header"><span class="section-num">۳۱</span><h2>چه زمانی Sol را برای Implementation استفاده کنم؟</h2></div>
+      <p>فقط وقتی implementation خودش سخت شده: procedural geometry پیچیده، topology-sensitive work، boolean interaction سخت، mathematical mesh generation، script architecture پیچیده، DeepSeek دوبار strategy درست را اشتباه اجرا کرده. نه صرفاً چون asset بزرگ است.</p>
+    </section>
 
-  <!-- 32 -->
-  <section class="section" id="s32">
-    <div class="section-header">
-      <span class="section-num">۳۲</span>
-      <h2>صرفه‌جویی در Token</h2>
+    <!-- ════════════════════════════════════════════ -->
+    <!-- CHAPTER 5 — Skill & Practice -->
+    <!-- ════════════════════════════════════════════ -->
+    <div class="chapter-divider reveal" data-chapter="5">
+      <div class="chapter-divider-label"><span class="ch-label-num">فصل ۵</span> مهارت و تمرین</div>
+      <h2>نوشتن Prompt مؤثر و شروع کار واقعی</h2>
+      <p>صرفه‌جویی در Token، ساختار Prompt، مفاهیم Blender، و روز اول و دوم پروژه.</p>
     </div>
-    <ul>
-      <li><strong>هر Session فقط منابع لازم را بده</strong> — برای Task پله لازم نیست reference لباس و landscape load شود</li>
-      <li><strong>Planning Conversation را به Implementation نفرست</strong> — فقط task-plan.md + task contract + ref pack + current workfile + project profile</li>
-      <li><strong>خروجی agent را محدود کن</strong> — فقط: Changes Made, Intentionally Unchanged, Outputs, Validation, Remaining Mismatch, Blockers, Recommended Next Task</li>
-      <li><strong>یک مشکل را ده بار توضیح نده</strong> — اگر review artifact داری از همان استفاده کن</li>
-      <li><strong>Session مرده را نکش</strong> — اگر agent دو بار اشتباه قبلی را تکرار کرد: session جدید. Context بیشتر همیشه intelligence بیشتر نیست. گاهی دقیقاً برعکسه.</li>
-    </ul>
-  </section>
 
-  <!-- 33 -->
-  <section class="section" id="s33">
-    <div class="section-header">
-      <span class="section-num">۳۳</span>
-      <h2>Prompt Anatomy</h2>
-    </div>
-    <p>تقریباً هر prompt اجرایی تو باید این هفت چیز را داشته باشد:</p>
-    <pre>1. Skill
+    <!-- 32 -->
+    <section class="section reveal" id="s32" data-chapter="5">
+      <div class="section-header"><span class="section-num">۳۲</span><h2>صرفه‌جویی در Token</h2></div>
+      <ul>
+        <li><strong>هر Session فقط منابع لازم را بده</strong> — برای Task پله لازم نیست reference لباس و landscape load شود</li>
+        <li><strong>Planning Conversation را به Implementation نفرست</strong> — فقط task-plan.md + task contract + ref pack + current workfile + project profile</li>
+        <li><strong>خروجی agent را محدود کن</strong> — فقط: Changes Made, Intentionally Unchanged, Outputs, Validation, Remaining Mismatch, Blockers, Recommended Next Task</li>
+        <li><strong>یک مشکل را ده بار توضیح نده</strong> — اگر review artifact داری از همان استفاده کن</li>
+        <li><strong>Session مرده را نکش</strong> — اگر agent دو بار اشتباه قبلی را تکرار کرد: session جدید. Context بیشتر همیشه intelligence بیشتر نیست. گاهی دقیقاً برعکسه.</li>
+      </ul>
+    </section>
+
+    <!-- 33 -->
+    <section class="section reveal" id="s33" data-chapter="5">
+      <div class="section-header"><span class="section-num">۳۳</span><h2>Prompt Anatomy</h2></div>
+      <p>تقریباً هر prompt اجرایی تو باید این هفت چیز را داشته باشد:</p>
+      <pre>1. Skill
 2. Task
 3. Goal
 4. Inputs
 5. Scope
 6. Do Not Change
 7. Output</pre>
-    <p>مثال:</p>
-    <pre>Use blender-modeling.
+      <p>مثال:</p>
+      <div class="prompt-example">
+        <pre>Use blender-modeling.
 
 Task:
 CZ-ZIG-003 — Main Stair Structural Detail.
@@ -944,28 +1605,23 @@ one top view, and one 3/4 clay review.
 
 Stop if the measurements conflict.
 Do not infer missing historical dimensions silently.</pre>
-  </section>
+      </div>
+    </section>
 
-  <!-- 34 -->
-  <section class="section" id="s34">
-    <div class="section-header">
-      <span class="section-num">۳۴</span>
-      <h2>Promptهایی که نباید استفاده کنی</h2>
-    </div>
-    <blockquote>«مدل رو بهتر کن» — بد است.</blockquote>
-    <blockquote>«جزئیات بیشتری بده» — بد است.</blockquote>
-    <blockquote>«مثل رفرنسش کن» — بد است.</blockquote>
-    <blockquote>«خیلی طبیعی‌تر و تاریخی‌ترش کن» — بد است.</blockquote>
-    <p>چون agent باید حدس بزند مشکل چیست.</p>
-  </section>
+    <!-- 34 -->
+    <section class="section reveal" id="s34" data-chapter="5">
+      <div class="section-header"><span class="section-num">۳۴</span><h2>Promptهایی که نباید استفاده کنی</h2></div>
+      <blockquote>«مدل رو بهتر کن» — بد است.</blockquote>
+      <blockquote>«جزئیات بیشتری بده» — بد است.</blockquote>
+      <blockquote>«مثل رفرنسش کن» — بد است.</blockquote>
+      <blockquote>«خیلی طبیعی‌تر و تاریخی‌ترش کن» — بد است.</blockquote>
+      <p>چون agent باید حدس بزند مشکل چیست.</p>
+    </section>
 
-  <!-- 35 -->
-  <section class="section" id="s35">
-    <div class="section-header">
-      <span class="section-num">۳۵</span>
-      <h2>به‌جای آن بگو</h2>
-    </div>
-    <pre>The primary mass is accepted.
+    <!-- 35 -->
+    <section class="section reveal" id="s35" data-chapter="5">
+      <div class="section-header"><span class="section-num">۳۵</span><h2>به‌جای آن بگو</h2></div>
+      <div class="example-good">The primary mass is accepted.
 
 The stair width and terrace spacing still differ from the
 approved reference.
@@ -973,76 +1629,66 @@ approved reference.
 Modify only those two relationships.
 
 Keep the ziggurat footprint, total height, orientation,
-and upper mass unchanged.</pre>
-    <p>این زبان باید تبدیل شود به زبان عادی تو برای کار با agent.</p>
-  </section>
+and upper mass unchanged.</div>
+      <p>این زبان باید تبدیل شود به زبان عادی تو برای کار با agent.</p>
+    </section>
 
-  <!-- 36 -->
-  <section class="section" id="s36">
-    <div class="section-header">
-      <span class="section-num">۳۶</span>
-      <h2>مفاهیم Blender که باید بدانی</h2>
-    </div>
-    <p><strong>Geometry:</strong> mesh، vertex/edge/face، transform، origin، scale، dimensions، topology</p>
-    <p><strong>Modeling:</strong> extrude، inset، bevel، boolean، array، mirror، modifier، curve، Geometry Nodes</p>
-    <p><strong>Scene:</strong> object، collection، hierarchy، linked object، instance</p>
-    <p><strong>Camera:</strong> focal length، sensor، perspective، depth of field، clipping</p>
-    <p><strong>Materials:</strong> material، shader، texture، UV، roughness، normal</p>
-    <p><strong>Animation:</strong> frame، keyframe، interpolation، timeline</p>
-  </section>
+    <!-- 36 -->
+    <section class="section reveal" id="s36" data-chapter="5">
+      <div class="section-header"><span class="section-num">۳۶</span><h2>مفاهیم Blender که باید بدانی</h2></div>
+      <p><strong>Geometry:</strong> mesh، vertex/edge/face، transform، origin، scale، dimensions، topology</p>
+      <p><strong>Modeling:</strong> extrude، inset، bevel، boolean، array، mirror، modifier، curve، Geometry Nodes</p>
+      <p><strong>Scene:</strong> object، collection، hierarchy، linked object، instance</p>
+      <p><strong>Camera:</strong> focal length، sensor، perspective، depth of field، clipping</p>
+      <p><strong>Materials:</strong> material، shader، texture، UV، roughness، normal</p>
+      <p><strong>Animation:</strong> frame، keyframe، interpolation، timeline</p>
+    </section>
 
-  <!-- 37 -->
-  <section class="section" id="s37">
-    <div class="section-header">
-      <span class="section-num">۳۷</span>
-      <h2>مهم‌ترین مهارت</h2>
-    </div>
-    <p><strong>تشخیص اینکه چه چیزی غلط است.</strong></p>
-    <p>نه: «حسش خوب نیست.» بلکه: «دوربین زیادی بالاست و حس حضور انسان کنار بنا از بین رفته.» یا: «نسبت طبقات باعث شده بنا باریک‌تر از reference دیده شود.» یا: «جزئیات قبل از اینکه جرم اصلی درست شود، زیادی برجسته شده‌اند.»</p>
-    <p>این توانایی برای workflow تو از سرعت manual modeling مهم‌تر است.</p>
-  </section>
+    <!-- 37 -->
+    <section class="section reveal" id="s37" data-chapter="5">
+      <div class="section-header"><span class="section-num">۳۷</span><h2>مهم‌ترین مهارت</h2></div>
+      <p><strong>تشخیص اینکه چه چیزی غلط است.</strong></p>
+      <p>نه: «حسش خوب نیست.» بلکه: «دوربین زیادی بالاست و حس حضور انسان کنار بنا از بین رفته.» یا: «نسبت طبقات باعث شده بنا باریک‌تر از reference دیده شود.» یا: «جزئیات قبل از اینکه جرم اصلی درست شود، زیادی برجسته شده‌اند.»</p>
+      <p>این توانایی برای workflow تو از سرعت manual modeling مهم‌تر است.</p>
+    </section>
 
-  <!-- 38 -->
-  <section class="section" id="s38">
-    <div class="section-header">
-      <span class="section-num">۳۸</span>
-      <h2>روز اول واقعی چغازنبیل</h2>
-    </div>
-    <p>اگر فردا بخواهی شروع کنی فقط این کارها را انجام بده:</p>
-    <p><strong>Session 1 — Setup:</strong> <code>Initialize Chogha Zanbil prototype.</code> تمام.</p>
-    <p><strong>Session 2 — Planner / Sol:</strong> <code>Plan CZ-ZIG-001 Blockout.</code> plan را review کن. اصلاح کن. approve کن. تمام.</p>
-    <p><strong>Session 3 — DeepSeek:</strong> <code>Implement CZ-ZIG-001.</code> preview بگیر. حداکثر دو correction. اگر قبول شد: Accept. Checkpoint. End session.</p>
-    <blockquote>برای همان روز حتی همین کافی است.</blockquote>
-  </section>
+    <!-- 38 -->
+    <section class="section reveal" id="s38" data-chapter="5">
+      <div class="section-header"><span class="section-num">۳۸</span><h2>روز اول واقعی چغازنبیل</h2></div>
+      <p>اگر فردا بخواهی شروع کنی فقط این کارها را انجام بده:</p>
+      <p><strong>Session 1 — Setup:</strong> <code>Initialize Chogha Zanbil prototype.</code> تمام.</p>
+      <p><strong>Session 2 — Planner / Sol:</strong> <code>Plan CZ-ZIG-001 Blockout.</code> plan را review کن. اصلاح کن. approve کن. تمام.</p>
+      <p><strong>Session 3 — DeepSeek:</strong> <code>Implement CZ-ZIG-001.</code> preview بگیر. حداکثر دو correction. اگر قبول شد: Accept. Checkpoint. End session.</p>
+      <blockquote>برای همان روز حتی همین کافی است.</blockquote>
+    </section>
 
-  <!-- 39 -->
-  <section class="section" id="s39">
-    <div class="section-header">
-      <span class="section-num">۳۹</span>
-      <h2>روز دوم</h2>
-    </div>
-    <p>Task تازه: <code>CZ-ZIG-002 — Primary Forms</code>. Planner session تازه. بعد implementation session تازه.</p>
-  </section>
+    <!-- 39 -->
+    <section class="section reveal" id="s39" data-chapter="5">
+      <div class="section-header"><span class="section-num">۳۹</span><h2>روز دوم</h2></div>
+      <p>Task تازه: <code>CZ-ZIG-002 — Primary Forms</code>. Planner session تازه. بعد implementation session تازه.</p>
+    </section>
 
-  <!-- 40 -->
-  <section class="section" id="s40">
-    <div class="section-header">
-      <span class="section-num">۴۰</span>
-      <h2>تعریف موفقیت</h2>
-    </div>
-    <p>موفقیت این نیست که بعد از یک روز چغازنبیل photorealistic داشته باشی. موفقیت روز اول این است:</p>
-    <blockquote>یک Blockout تاریخی کنترل‌شده دارم که می‌دانم از کجا آمده، چه چیزهایش قطعی است، چه چیزهایش نامطمئن است و می‌توانم فردا بدون خراب‌کردن امروز ادامه‌اش بدهم.</blockquote>
-    <p>موفقیت واقعی pipeline همین است.</p>
-  </section>
+    <!-- 40 -->
+    <section class="section reveal" id="s40" data-chapter="5">
+      <div class="section-header"><span class="section-num">۴۰</span><h2>تعریف موفقیت</h2></div>
+      <p>موفقیت این نیست که بعد از یک روز چغازنبیل photorealistic داشته باشی. موفقیت روز اول این است:</p>
+      <blockquote>یک Blockout تاریخی کنترل‌شده دارم که می‌دانم از کجا آمده، چه چیزهایش قطعی است، چه چیزهایش نامطمئن است و می‌توانم فردا بدون خراب‌کردن امروز ادامه‌اش بدهم.</blockquote>
+      <p>موفقیت واقعی pipeline همین است.</p>
+    </section>
 
-  <!-- Cheatsheet -->
-  <section class="section" id="s-cheat">
-    <div class="section-header">
-      <span class="section-num">⚡</span>
-      <h2>Cheat Sheet</h2>
+    <!-- ════════════════════════════════════════════ -->
+    <!-- CHEAT SHEET -->
+    <!-- ════════════════════════════════════════════ -->
+    <div class="chapter-divider reveal" data-chapter="5">
+      <div class="chapter-divider-label"><span class="ch-label-num">⚡</span> برگۀ تقلب</div>
+      <h2>یک صفحه برای همه چیز</h2>
+      <p>خلاصه‌ی سریع workflow، قواعد و دستورالعمل‌ها.</p>
     </div>
-    <div class="cheatsheet">
-      <pre>NEW PHASE
+
+    <section class="section reveal" id="s-cheat" data-chapter="5">
+      <div class="section-header"><span class="section-num">⚡</span><h2>Cheat Sheet</h2></div>
+      <div class="cheatsheet">
+        <pre>NEW PHASE
 ↓
 new task
 ↓
@@ -1077,8 +1723,8 @@ release lock
 END SESSION
 ↓
 NEXT PHASE</pre>
-      <p style="color:#c7a45b; font-weight:500; margin-top:1rem;">اگر دو بار خراب شد:</p>
-      <pre>DO NOT RETRY AGAIN
+        <p style="color:#c7a45b; font-weight:500; margin-top:1rem;">اگر دو بار خراب شد:</p>
+        <pre>DO NOT RETRY AGAIN
 ↓
 diagnose
 ↓
@@ -1087,99 +1733,278 @@ new planning session
 revised plan
 ↓
 new implementation session</pre>
-    </div>
-    <div class="highlight-box gold" style="margin-top:1.5rem;">
-      <p style="font-size:1.1rem; font-weight:600; color:#c7a45b;">📌 یک جمله که موقع کار یادت بماند</p>
-      <p style="font-size:1rem; margin-top:0.5rem;"><strong>هرچه Task کوچک‌تر، acceptance واضح‌تر، reference محدودتر و context تمیزتر باشد، AI کمتر خنگ‌بازی درمی‌آورد.</strong></p>
-      <p style="margin-top:0.8rem;">قرار نیست یک agent «چغازنبیل» را بسازد. قرار است ده‌ها task کوچک و قابل‌کنترل، در نهایت چغازنبیل را بسازند.</p>
-    </div>
-  </section>
+      </div>
+      <div class="highlight-box gold" style="margin-top:1.5rem;">
+        <p style="font-size:1.1rem; font-weight:600; color:#c7a45b;">📌 یک جمله که موقع کار یادت بماند</p>
+        <p style="font-size:1rem; margin-top:0.5rem;"><strong>هرچه Task کوچک‌تر، acceptance واضح‌تر، reference محدودتر و context تمیزتر باشد، AI کمتر خنگ‌بازی درمی‌آورد.</strong></p>
+        <p style="margin-top:0.8rem;">قرار نیست یک agent «چغازنبیل» را بسازد. قرار است ده‌ها task کوچک و قابل‌کنترل، در نهایت چغازنبیل را بسازند.</p>
+      </div>
+    </section>
 
+  </div>
 </main>
-
 <script>
-// ─── Build TOC ───
+/* ═══════════════════════════════════════════════════════
+   Sarzamin Playbook — JavaScript
+   ═══════════════════════════════════════════════════════ */
 (function(){
-  const sections = document.querySelectorAll('.section');
-  const toc = document.getElementById('toc');
-  let counter = 0;
+  'use strict';
 
-  sections.forEach(sec => {
-    const id = sec.id;
-    const header = sec.querySelector('.section-header');
-    if (!header) return;
-    const numEl = header.querySelector('.section-num');
-    const titleEl = header.querySelector('h2');
-    const num = numEl ? numEl.textContent.trim() : '';
-    const title = titleEl ? titleEl.textContent.trim() : '';
-    counter++;
+  /* ─── Chapter metadata ─── */
+  const chapters = [
+    { num: 1, label: 'مبانی Workflow', sections: ['s1','s2','s3','s4','s5'] },
+    { num: 2, label: 'کار با عامل‌ها', sections: ['s6','s7','s8','s9','s10','s11','s12','s13'] },
+    { num: 3, label: 'قفل، بررسی و بازخورد', sections: ['s14','s15','s16','s17','s18','s19','s20','s21','s22'] },
+    { num: 4, label: 'خط تولید', sections: ['s23','s24','s25','s26','s27','s28','s29','s30','s31'] },
+    { num: 5, label: 'مهارت و تمرین', sections: ['s32','s33','s34','s35','s36','s37','s38','s39','s40'] },
+  ];
+  const cheatId = 's-cheat';
+  const totalSections = 40;
 
-    const li = document.createElement('li');
-    li.className = 'toc-h2';
-    const a = document.createElement('a');
-    a.href = '#' + id;
-    const numSpan = document.createElement('span');
-    numSpan.className = 'toc-num';
-    numSpan.textContent = num;
-    a.appendChild(numSpan);
-    a.appendChild(document.createTextNode(title));
-    li.appendChild(a);
-    toc.appendChild(li);
-  });
-})();
-
-// ─── Active TOC highlight (scroll spy) ───
-(function(){
-  const tocLinks = document.querySelectorAll('.toc a');
-  const sections = document.querySelectorAll('.section');
-
-  function updateActive() {
-    let current = '';
-    const scrollY = window.scrollY + 120;
-    sections.forEach(sec => {
-      if (sec.offsetTop <= scrollY) {
-        current = '#' + sec.id;
-      }
+  /* ─── Build sidebar nav ─── */
+  function buildNav() {
+    var container = document.getElementById('chapterNavContent');
+    var html = '';
+    chapters.forEach(function(ch) {
+      html += '<div class="chapter-group" data-ch="' + ch.num + '">';
+      html += '<div class="chapter-group-header"><span class="ch-num">' + padNum(ch.num) + '</span> ' + ch.label + '</div>';
+      html += '<ul class="ch-nav-list">';
+      ch.sections.forEach(function(id) {
+        var sec = document.getElementById(id);
+        if (!sec) return;
+        var numEl = sec.querySelector('.section-num');
+        var titleEl = sec.querySelector('h2');
+        var num = numEl ? numEl.textContent.trim() : '';
+        var title = titleEl ? titleEl.textContent.trim() : '';
+        html += '<li class="ch-nav-item"><a href="#' + id + '" class="ch-nav-link" data-section="' + id + '">';
+        html += '<span class="s-num">' + padNum(num) + '</span> ' + escapeHtml(title) + '</a></li>';
+      });
+      html += '</ul></div>';
     });
-    tocLinks.forEach(link => {
-      link.classList.remove('active');
-      if (link.getAttribute('href') === current) {
-        link.classList.add('active');
+    // Cheat sheet
+    html += '<div class="chapter-group">';
+    html += '<div class="chapter-group-header"><span class="ch-num">⚡</span> برگۀ تقلب</div>';
+    html += '<ul class="ch-nav-list"><li class="ch-nav-item"><a href="#s-cheat" class="ch-nav-link" data-section="s-cheat">';
+    html += '<span class="s-num">⚡</span> Cheat Sheet &amp; Workflow</a></li></ul></div>';
+    container.innerHTML = html;
+  }
+
+  function padNum(n) {
+    n = String(n);
+    return n.length === 1 ? '0' + n : n;
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+  }
+
+  /* ─── Chapter/Section helpers ─── */
+  function getSectionChapter(sectionId) {
+    for (var i = 0; i < chapters.length; i++) {
+      if (chapters[i].sections.indexOf(sectionId) !== -1) return chapters[i];
+    }
+    return null;
+  }
+
+  function getChapterIndex(sectionId) {
+    for (var i = 0; i < chapters.length; i++) {
+      if (chapters[i].sections.indexOf(sectionId) !== -1) return i;
+    }
+    return -1;
+  }
+
+  function getSectionIndex(sectionId) {
+    if (sectionId === cheatId) return totalSections;
+    for (var i = 0; i < chapters.length; i++) {
+      var idx = chapters[i].sections.indexOf(sectionId);
+      if (idx !== -1) {
+        var offset = 0;
+        for (var j = 0; j < i; j++) offset += chapters[j].sections.length;
+        return offset + idx + 1;
       }
+    }
+    return 0;
+  }
+
+  /* ─── IntersectionObserver for active section ─── */
+  var sectionEls = document.querySelectorAll('.section');
+  var navLinks = {};
+  var activeSectionId = null;
+
+  // Collect nav links
+  document.querySelectorAll('.ch-nav-link').forEach(function(link) {
+    var id = link.getAttribute('data-section');
+    if (id) navLinks[id] = link;
+  });
+
+  function updateActive(id) {
+    if (id === activeSectionId) return;
+    activeSectionId = id;
+
+    // Update nav links
+    Object.keys(navLinks).forEach(function(key) {
+      navLinks[key].classList.toggle('active', key === id);
+    });
+
+    // Update chapter indicator in top nav
+    var ch = getSectionChapter(id);
+    var chEl = document.getElementById('currentChapter');
+    if (ch && chEl) {
+      chEl.innerHTML = '<span>' + ch.num + '</span> / ۵ — ' + ch.label;
+    } else if (id === cheatId && chEl) {
+      chEl.innerHTML = '<span>⚡</span> / ۵ — برگۀ تقلب';
+    }
+
+    // Progress
+    var idx = getSectionIndex(id);
+    var pct = Math.round((idx / totalSections) * 100);
+    document.getElementById('progressPct').textContent = pct + '٪';
+    document.getElementById('progressFill').style.width = pct + '%';
+    var gp = document.getElementById('globalProgressFill');
+    if (gp) gp.style.width = pct + '%';
+  }
+
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      var visible = [];
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) visible.push(entry.target.id);
+      });
+      if (visible.length > 0) {
+        // Pick the one closest to the top
+        var best = null;
+        var bestTop = Infinity;
+        visible.forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) {
+            var rect = el.getBoundingClientRect();
+            if (rect.top < bestTop) {
+              bestTop = rect.top;
+              best = id;
+            }
+          }
+        });
+        if (best) updateActive(best);
+      }
+    }, { threshold: 0.2, rootMargin: '-80px 0px -40% 0px' });
+
+    sectionEls.forEach(function(sec) { observer.observe(sec); });
+  } else {
+    // Fallback: scroll listener
+    var allIds = [];
+    chapters.forEach(function(ch) {
+      ch.sections.forEach(function(id) { allIds.push(id); });
+    });
+    allIds.push(cheatId);
+
+    window.addEventListener('scroll', function() {
+      var scrollY = window.scrollY + 120;
+      var current = allIds[0];
+      allIds.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el && el.offsetTop <= scrollY) current = id;
+      });
+      updateActive(current);
+    }, { passive: true });
+  }
+
+  /* ─── Reading progress (rAF) ─── */
+  var progressBar = document.getElementById('globalProgressFill');
+  if (progressBar) {
+    function updateProgress() {
+      var scrollTop = window.scrollY;
+      var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      var pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = pct + '%';
+      requestAnimationFrame(updateProgress);
+    }
+    requestAnimationFrame(updateProgress);
+  }
+
+  /* ─── Nav toggle (mobile) ─── */
+  var toggleBtn = document.getElementById('navToggle');
+  var nav = document.getElementById('chapterNav');
+  var overlay = document.getElementById('navOverlay');
+  var navOpen = false;
+
+  function openNav() {
+    navOpen = true;
+    nav.classList.add('open');
+    overlay.classList.add('visible');
+    toggleBtn.setAttribute('aria-expanded', 'true');
+    toggleBtn.innerHTML = '<span aria-hidden="true">✕</span>';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeNav() {
+    navOpen = false;
+    nav.classList.remove('open');
+    overlay.classList.remove('visible');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+    toggleBtn.innerHTML = '<span aria-hidden="true">☰</span>';
+    document.body.style.overflow = '';
+    toggleBtn.focus();
+  }
+
+  if (toggleBtn && nav) {
+    toggleBtn.addEventListener('click', function() {
+      navOpen ? closeNav() : openNav();
+    });
+
+    overlay.addEventListener('click', closeNav);
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && navOpen) closeNav();
+    });
+
+    // Close on link click
+    nav.querySelectorAll('.ch-nav-link').forEach(function(link) {
+      link.addEventListener('click', function() {
+        if (window.innerWidth <= 1100) closeNav();
+      });
     });
   }
 
-  window.addEventListener('scroll', updateActive);
-  window.addEventListener('load', updateActive);
-})();
+  /* ─── Entrance reveals ─── */
+  if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    var revealEls = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      var revealObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      revealEls.forEach(function(el) { revealObserver.observe(el); });
+    } else {
+      revealEls.forEach(function(el) { el.classList.add('visible'); });
+    }
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el) { el.classList.add('visible'); });
+  }
 
-// ─── Reading progress ───
-(function(){
-  const progress = document.getElementById('progress');
-  window.addEventListener('scroll', () => {
-    const scrollTop = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-    progress.style.width = pct + '%';
-  });
-})();
+  /* ─── Init ─── */
+  buildNav();
 
-// ─── Sidebar toggle (mobile) ───
-(function(){
-  const btn = document.getElementById('toggleSidebar');
-  const sidebar = document.getElementById('sidebar');
-  btn.addEventListener('click', () => {
-    sidebar.classList.toggle('open');
+  // Set initial active section from hash or first
+  var hash = window.location.hash.replace('#', '');
+  var initialId = hash && document.getElementById(hash) ? hash : 's1';
+  // Re-collect nav links after buildNav
+  document.querySelectorAll('.ch-nav-link').forEach(function(link) {
+    var id = link.getAttribute('data-section');
+    if (id) navLinks[id] = link;
   });
+  updateActive(initialId);
 
-  // Close sidebar on link click (mobile)
-  document.querySelectorAll('.toc a').forEach(link => {
-    link.addEventListener('click', () => {
-      if (window.innerWidth <= 900) {
-        sidebar.classList.remove('open');
-      }
-    });
-  });
+  // Set initial progress
+  var initIdx = getSectionIndex(initialId);
+  var initPct = Math.round((initIdx / totalSections) * 100);
+  document.getElementById('progressPct').textContent = initPct + '٪';
+  document.getElementById('progressFill').style.width = initPct + '%';
 })();
 </script>
 </body>
