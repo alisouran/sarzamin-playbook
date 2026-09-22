@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>سرزمین — بازی آموزشی تولید سه‌بعدی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   Sarzamin 3D Production Playbook — Game
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Custom Properties ─── */
+:root {
+  --clay-900: #0d0a08;
+  --clay-800: #14100c;
+  --clay-700: #1c1712;
+  --clay-600: #2a221c;
+  --clay-500: #3d322a;
+  --clay-400: #5a4c42;
+  --clay-300: #8a7a6e;
+  --clay-200: #b8aea4;
+  --clay-100: #ddd6ce;
+  --clay-50:  #f0ebe6;
+
+  --gold-600: #8a7030;
+  --gold-500: #b8953e;
+  --gold-400: #c7a45b;
+  --gold-300: #d4b87a;
+  --gold-200: #e2cd99;
+
+  --green-600: #2d6a3e;
+  --green-500: #3d8a54;
+  --green-400: #5caa74;
+  --green-300: #7cca94;
+  --green-200: #9deab4;
+
+  --red-500: #c75a5a;
+  --red-400: #e57373;
+
+  --lapis-800: #0f1f30;
+  --lapis-700: #162a40;
+  --lapis-600: #1e3a55;
+  --lapis-500: #2a4a6b;
+  --lapis-400: #3d6487;
+  --lapis-300: #5a80a3;
+
+  --stone-200: #d4c9b8;
+  --stone-300: #b8aea4;
+  --stone-400: #8a7e72;
+  --stone-500: #5c5248;
+
+  --bg-page:          var(--clay-900);
+  --bg-elevated:      var(--clay-800);
+  --bg-card:          var(--clay-700);
+  --bg-nav:           rgba(12, 9, 7, 0.92);
+  --border-light:     rgba(255, 255, 255, 0.04);
+  --border-med:       rgba(255, 255, 255, 0.07);
+  --border-gold:      rgba(199, 164, 91, 0.18);
+  --text-primary:     var(--clay-50);
+  --text-secondary:   var(--stone-200);
+  --text-tertiary:    var(--stone-400);
+  --text-gold:        var(--gold-400);
+  --text-gold-bright: var(--gold-200);
+
+  --fs-xs:   0.75rem;
+  --fs-sm:   0.8125rem;
+  --fs-base: 1.0625rem;
+  --fs-md:   1.125rem;
+  --fs-lg:   1.35rem;
+  --fs-xl:   1.75rem;
+  --fs-2xl:  2.25rem;
+  --fs-hero: clamp(1.8rem, 4vw, 2.8rem);
+
+  --lh-tight:  1.25;
+  --lh-normal: 1.7;
+  --lh-loose:  1.9;
+
+  --fw-light:   300;
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-semibold: 600;
+  --fw-bold:   700;
+  --fw-extrabold: 800;
+  --fw-black:  900;
+
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+
+  --content-max: 900px;
+  --nav-height: 56px;
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 200ms;
+  --duration-normal: 400ms;
+  --duration-slow: 600ms;
+}
+
+/* ─── Reset ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─── Base ─── */
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-height) + var(--space-4)); }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-secondary);
+  line-height: var(--lh-loose);
+  font-size: var(--fs-base);
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--gold-400); color: var(--clay-900); }
+:focus-visible { outline: 2px solid var(--gold-400); outline-offset: 3px; border-radius: var(--radius-sm); }
+
+/* ─── Gate ─── */
+.game-wrap { display:none; }
+body.authed .game-wrap { display:block; }
+body.authed #gate { display:none !important; }
+#gate {
+  position:fixed; inset:0; z-index:99999; background:var(--bg-page);
+  display:flex; align-items:center; justify-content:center; flex-direction:column;
+}
+#gate .g-icon { font-size:3rem; margin-bottom:0.5rem; }
+#gate .g-title { font-size:clamp(1.4rem,4vw,1.8rem); font-weight:800; color:var(--text-gold); margin:0; }
+#gate .g-sub { color:var(--text-tertiary); margin:0.25rem 0 1.5rem; font-size:0.85rem; }
+#gate .g-input {
+  width:280px; max-width:80vw; padding:0.8rem 1rem; border-radius:10px;
+  border:1px solid var(--border-med); background:var(--bg-card); color:var(--text-primary);
+  font:inherit; font-size:1rem; text-align:center; outline:none; transition:0.2s;
+}
+#gate .g-input:focus { border-color:var(--gold-400); }
+#gate .g-err { color:var(--red-400); font-size:0.85rem; margin:0.5rem 0; display:none; }
+#gate .g-btn {
+  margin-top:1rem; padding:0.8rem 2.5rem; border:none; border-radius:10px;
+  background:var(--gold-400); color:var(--clay-900);
+  font:inherit; font-size:1rem; font-weight:700; cursor:pointer; transition:opacity 0.2s;
+}
+#gate .g-btn:hover { opacity:0.9; }
+#gate .g-btn:disabled { opacity:0.5; cursor:not-allowed; }
+
+/* ═══════════════════════════════════════════════════════
+   Top Navigation
+   ═══════════════════════════════════════════════════════ */
+.top-nav {
+  position: fixed;
+  top:0; left:0; right:0;
+  z-index:500;
+  height:var(--nav-height);
+  background:var(--bg-nav);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border-med);
+  display:flex;
+  align-items:center;
+  padding:0 var(--space-4);
+  gap:var(--space-3);
+}
+.top-nav-logo {
+  display:flex;
+  align-items:center;
+  gap:var(--space-2);
+  text-decoration:none;
+  color:var(--text-primary);
+  font-weight:var(--fw-extrabold);
+  font-size:var(--fs-sm);
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.top-nav-logo .logo-icon {
+  width:28px; height:28px;
+  border:2px solid var(--gold-400);
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:var(--fs-xs);
+  color:var(--gold-400);
+  flex-shrink:0;
+}
+.top-nav-title {
+  font-size:var(--fs-xs);
+  color:var(--text-tertiary);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  flex:1;
+  text-align:center;
+}
+.top-nav-title span { color:var(--text-gold); font-weight:var(--fw-medium); }
+.top-nav-progress {
+  display:flex;
+  align-items:center;
+  gap:var(--space-2);
+  flex-shrink:0;
+  font-size:var(--fs-xs);
+  color:var(--text-tertiary);
+  direction:ltr;
+}
+.top-nav-progress .progress-pct {
+  color:var(--text-gold);
+  font-weight:var(--fw-semibold);
+  min-width:2.5em;
+  text-align:right;
+}
+.top-nav-progress .progress-track {
+  width:80px; height:4px;
+  background:var(--border-med);
+  border-radius:4px;
+  overflow:hidden;
+}
+.top-nav-progress .progress-fill {
+  height:100%;
+  background:var(--gold-400);
+  width:0%;
+  border-radius:4px;
+  transition:width var(--duration-normal) var(--ease-out);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Main Layout
+   ═══════════════════════════════════════════════════════ */
+.main {
+  padding-top:var(--nav-height);
+  min-height:100vh;
+}
+.main-inner {
+  max-width:var(--content-max);
+  margin:0 auto;
+  padding:var(--space-8) var(--space-4) var(--space-24);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Dashboard
+   ═══════════════════════════════════════════════════════ */
+.dashboard {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:var(--space-4);
+  margin-bottom:var(--space-8);
+}
+@media (max-width:600px) {
+  .dashboard { grid-template-columns:1fr; }
+}
+
+.dash-card {
+  background:var(--bg-card);
+  border:1px solid var(--border-med);
+  border-radius:var(--radius-md);
+  padding:var(--space-4);
+}
+.dash-card-label {
+  font-size:var(--fs-xs);
+  color:var(--text-tertiary);
+  font-weight:var(--fw-medium);
+  margin-bottom:var(--space-1);
+}
+.dash-card-value {
+  font-size:var(--fs-xl);
+  font-weight:var(--fw-black);
+  color:var(--text-gold);
+  line-height:1.2;
+}
+.dash-card-sub {
+  font-size:var(--fs-xs);
+  color:var(--text-tertiary);
+  margin-top:var(--space-1);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Tab Bar
+   ═══════════════════════════════════════════════════════ */
+.tab-bar {
+  display:flex;
+  gap:var(--space-2);
+  margin-bottom:var(--space-6);
+  border-bottom:1px solid var(--border-med);
+  padding-bottom:0;
+}
+.tab-btn {
+  background:none;
+  border:none;
+  color:var(--text-tertiary);
+  font:inherit;
+  font-size:var(--fs-sm);
+  font-weight:var(--fw-medium);
+  padding:var(--space-2) var(--space-4);
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+}
+.tab-btn:hover { color:var(--text-secondary); }
+.tab-btn.active {
+  color:var(--text-gold);
+  border-bottom-color:var(--gold-400);
+}
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+
+/* ═══════════════════════════════════════════════════════
+   Workflow Map
+   ═══════════════════════════════════════════════════════ */
+.map-chapter {
+  background:var(--bg-elevated);
+  border:1px solid var(--border-med);
+  border-radius:var(--radius-md);
+  margin-bottom:var(--space-4);
+  overflow:hidden;
+}
+.map-chapter-header {
+  display:flex;
+  align-items:center;
+  gap:var(--space-3);
+  padding:var(--space-3) var(--space-4);
+  background:var(--bg-card);
+  border-bottom:1px solid var(--border-med);
+}
+.map-chapter-num {
+  font-size:var(--fs-xs);
+  font-weight:var(--fw-bold);
+  color:var(--gold-500);
+  font-family:monospace;
+  direction:ltr;
+  background:rgba(199,164,91,0.08);
+  padding:var(--space-1) var(--space-2);
+  border-radius:var(--radius-sm);
+}
+.map-chapter-title {
+  flex:1;
+  font-size:var(--fs-sm);
+  font-weight:var(--fw-bold);
+  color:var(--text-primary);
+}
+.map-chapter-badge {
+  font-size:var(--fs-xs);
+  color:var(--text-tertiary);
+}
+.map-chapter-badge.earned { color:var(--green-400); }
+.map-steps {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(120px, 1fr));
+  gap:var(--space-2);
+  padding:var(--space-3);
+}
+@media (max-width:480px) {
+  .map-steps { grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); }
+}
+.map-step {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:var(--space-1);
+  padding:var(--space-2) var(--space-1);
+  border-radius:var(--radius-sm);
+  background:var(--bg-card);
+  border:1px solid var(--border-light);
+  cursor:pointer;
+  transition:all var(--duration-fast) var(--ease-out);
+  text-align:center;
+  font-size:var(--fs-xs);
+  color:var(--text-tertiary);
+  min-height:60px;
+  justify-content:center;
+}
+.map-step:hover { border-color:var(--border-med); }
+.map-step.active {
+  border-color:var(--gold-400);
+  background:rgba(199,164,91,0.08);
+  color:var(--text-gold);
+  font-weight:var(--fw-medium);
+}
+.map-step.completed {
+  border-color:var(--green-500);
+  background:rgba(61,138,84,0.08);
+  color:var(--green-300);
+}
+.map-step .step-num {
+  font-size:0.65rem;
+  font-weight:var(--fw-bold);
+  font-family:monospace;
+  direction:ltr;
+  opacity:0.7;
+}
+.map-step.completed .step-num { opacity:1; }
+.map-step .step-icon {
+  font-size:0.9rem;
+  line-height:1;
+}
+.map-step .step-label {
+  font-size:0.6rem;
+  line-height:1.3;
+  word-break:break-word;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Mission Panel
+   ═══════════════════════════════════════════════════════ */
+.mission-panel {
+  background:var(--bg-card);
+  border:1px solid var(--border-med);
+  border-radius:var(--radius-md);
+  padding:var(--space-6);
+  margin-bottom:var(--space-6);
+}
+.mission-header {
+  display:flex;
+  align-items:center;
+  gap:var(--space-3);
+  margin-bottom:var(--space-4);
+  flex-wrap:wrap;
+}
+.mission-chapter {
+  font-size:var(--fs-xs);
+  font-weight:var(--fw-bold);
+  color:var(--gold-500);
+  background:rgba(199,164,91,0.08);
+  padding:var(--space-1) var(--space-3);
+  border-radius:var(--radius-sm);
+  font-family:monospace;
+  direction:ltr;
+}
+.mission-step-num {
+  font-size:var(--fs-xs);
+  font-weight:var(--fw-bold);
+  color:var(--text-tertiary);
+  font-family:monospace;
+  direction:ltr;
+}
+.mission-title {
+  flex:1;
+  font-size:var(--fs-md);
+  font-weight:var(--fw-bold);
+  color:var(--text-primary);
+  min-width:120px;
+}
+.mission-status {
+  font-size:var(--fs-xs);
+  font-weight:var(--fw-semibold);
+  padding:var(--space-1) var(--space-3);
+  border-radius:100px;
+}
+.mission-status.pending {
+  background:rgba(199,164,91,0.1);
+  color:var(--text-gold);
+  border:1px solid var(--border-gold);
+}
+.mission-status.done {
+  background:rgba(61,138,84,0.1);
+  color:var(--green-400);
+  border:1px solid rgba(61,138,84,0.2);
+}
+
+.mission-lesson {
+  background:var(--bg-elevated);
+  border:1px solid var(--border-light);
+  border-radius:var(--radius-sm);
+  padding:var(--space-4);
+  margin-bottom:var(--space-4);
+  font-size:var(--fs-sm);
+  line-height:var(--lh-normal);
+  color:var(--text-secondary);
+}
+.mission-lesson strong { color:var(--text-primary); }
+
+.mission-task {
+  background:rgba(199,164,91,0.04);
+  border:1px solid var(--border-gold);
+  border-radius:var(--radius-sm);
+  padding:var(--space-4);
+  margin-bottom:var(--space-4);
+}
+.mission-task-label {
+  font-size:var(--fs-xs);
+  font-weight:var(--fw-bold);
+  color:var(--text-gold);
+  margin-bottom:var(--space-2);
+}
+.mission-task-text {
+  font-size:var(--fs-sm);
+  color:var(--text-secondary);
+  line-height:var(--lh-normal);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Quiz
+   ═══════════════════════════════════════════════════════ */
+.quiz-box {
+  background:var(--bg-elevated);
+  border:1px solid var(--border-med);
+  border-radius:var(--radius-sm);
+  padding:var(--space-4);
+  margin-top:var(--space-4);
+}
+.quiz-question {
+  font-size:var(--fs-sm);
+  font-weight:var(--fw-semibold);
+  color:var(--text-primary);
+  margin-bottom:var(--space-3);
+}
+.quiz-options { display:flex; flex-direction:column; gap:var(--space-2); }
+.quiz-option {
+  display:flex;
+  align-items:center;
+  gap:var(--space-3);
+  padding:var(--space-3) var(--space-4);
+  border-radius:var(--radius-sm);
+  border:1px solid var(--border-med);
+  background:var(--bg-card);
+  cursor:pointer;
+  transition:all var(--duration-fast) var(--ease-out);
+  font-size:var(--fs-sm);
+  color:var(--text-secondary);
+  text-align:right;
+}
+.quiz-option:hover {
+  border-color:var(--gold-400);
+  background:rgba(199,164,91,0.04);
+}
+.quiz-option.selected {
+  border-color:var(--gold-400);
+  background:rgba(199,164,91,0.08);
+  color:var(--text-gold);
+}
+.quiz-option.correct {
+  border-color:var(--green-500);
+  background:rgba(61,138,84,0.08);
+  color:var(--green-300);
+}
+.quiz-option.wrong {
+  border-color:var(--red-500);
+  background:rgba(199,90,90,0.08);
+  color:var(--red-400);
+}
+.quiz-option.disabled { pointer-events:none; opacity:0.7; }
+.quiz-option .opt-label {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:24px; height:24px;
+  border-radius:50%;
+  background:var(--clay-600);
+  font-size:var(--fs-xs);
+  font-weight:var(--fw-bold);
+  flex-shrink:0;
+}
+.quiz-option.correct .opt-label { background:var(--green-600); color:var(--green-200); }
+.quiz-option.wrong .opt-label { background:rgba(199,90,90,0.3); color:var(--red-400); }
+
+.quiz-feedback {
+  margin-top:var(--space-3);
+  padding:var(--space-3) var(--space-4);
+  border-radius:var(--radius-sm);
+  font-size:var(--fs-sm);
+  display:none;
+}
+.quiz-feedback.show { display:block; }
+.quiz-feedback.correct {
+  background:rgba(61,138,84,0.1);
+  border:1px solid rgba(61,138,84,0.2);
+  color:var(--green-300);
+}
+.quiz-feedback.wrong {
+  background:rgba(199,90,90,0.1);
+  border:1px solid rgba(199,90,90,0.2);
+  color:var(--red-400);
+}
+.quiz-btn {
+  margin-top:var(--space-3);
+  padding:var(--space-2) var(--space-6);
+  border:none;
+  border-radius:var(--radius-sm);
+  background:var(--gold-400);
+  color:var(--clay-900);
+  font:inherit;
+  font-size:var(--fs-sm);
+  font-weight:var(--fw-bold);
+  cursor:pointer;
+  transition:opacity var(--duration-fast) var(--ease-out);
+}
+.quiz-btn:hover { opacity:0.9; }
+.quiz-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+/* ═══════════════════════════════════════════════════════
+   Badges / Achievements
+   ═══════════════════════════════════════════════════════ */
+.badges-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));
+  gap:var(--space-3);
+  margin-bottom:var(--space-6);
+}
+@media (max-width:480px) {
+  .badges-grid { grid-template-columns:repeat(2, 1fr); }
+}
+.badge-card {
+  background:var(--bg-card);
+  border:1px solid var(--border-med);
+  border-radius:var(--radius-md);
+  padding:var(--space-3);
+  text-align:center;
+  transition:all var(--duration-fast) var(--ease-out);
+}
+.badge-card.locked {
+  opacity:0.35;
+  filter:grayscale(0.8);
+}
+.badge-card.earned {
+  border-color:var(--gold-400);
+  background:rgba(199,164,91,0.06);
+}
+.badge-icon {
+  font-size:2rem;
+  margin-bottom:var(--space-1);
+  line-height:1.2;
+}
+.badge-card.locked .badge-icon { opacity:0.5; }
+.badge-name {
+  font-size:var(--fs-xs);
+  font-weight:var(--fw-semibold);
+  color:var(--text-secondary);
+}
+.badge-card.earned .badge-name { color:var(--text-gold); }
+.badge-desc {
+  font-size:0.6rem;
+  color:var(--text-tertiary);
+  margin-top:var(--space-1);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Completion message
+   ═══════════════════════════════════════════════════════ */
+.completion-msg {
+  display:none;
+  background:rgba(199,164,91,0.06);
+  border:2px solid var(--gold-400);
+  border-radius:var(--radius-lg);
+  padding:var(--space-8);
+  text-align:center;
+  margin-bottom:var(--space-6);
+}
+.completion-msg.show { display:block; }
+.completion-msg .big-icon { font-size:3rem; margin-bottom:var(--space-2); }
+.completion-msg h2 {
+  font-size:var(--fs-lg);
+  color:var(--text-gold);
+  font-weight:var(--fw-extrabold);
+  margin-bottom:var(--space-2);
+}
+.completion-msg p {
+  font-size:var(--fs-sm);
+  color:var(--text-tertiary);
+  max-width:400px;
+  margin:0 auto;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Reset Button
+   ═══════════════════════════════════════════════════════ */
+.reset-area {
+  margin-top:var(--space-8);
+  padding-top:var(--space-6);
+  border-top:1px solid var(--border-med);
+  text-align:center;
+}
+.reset-btn {
+  background:none;
+  border:1px solid var(--border-med);
+  color:var(--text-tertiary);
+  font:inherit;
+  font-size:var(--fs-xs);
+  padding:var(--space-2) var(--space-4);
+  border-radius:var(--radius-sm);
+  cursor:pointer;
+  transition:all var(--duration-fast) var(--ease-out);
+}
+.reset-btn:hover {
+  border-color:var(--red-500);
+  color:var(--red-400);
+}
+.reset-confirm {
+  display:none;
+  margin-top:var(--space-3);
+  gap:var(--space-2);
+  justify-content:center;
+  align-items:center;
+}
+.reset-confirm.show { display:flex; }
+.reset-confirm-yes {
+  background:var(--red-500);
+  color:#fff;
+  border:none;
+  padding:var(--space-2) var(--space-4);
+  border-radius:var(--radius-sm);
+  font:inherit;
+  font-size:var(--fs-xs);
+  font-weight:var(--fw-bold);
+  cursor:pointer;
+}
+.reset-confirm-no {
+  background:var(--bg-card);
+  color:var(--text-secondary);
+  border:1px solid var(--border-med);
+  padding:var(--space-2) var(--space-4);
+  border-radius:var(--radius-sm);
+  font:inherit;
+  font-size:var(--fs-xs);
+  cursor:pointer;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Welcome / Empty State
+   ═══════════════════════════════════════════════════════ */
+.welcome-box {
+  text-align:center;
+  padding:var(--space-10) var(--space-4);
+}
+.welcome-box .w-icon { font-size:3rem; margin-bottom:var(--space-3); }
+.welcome-box h2 {
+  font-size:var(--fs-xl);
+  font-weight:var(--fw-black);
+  color:var(--text-primary);
+  margin-bottom:var(--space-2);
+}
+.welcome-box h2 .gold {
+  background:linear-gradient(135deg, var(--gold-200), var(--gold-400), var(--gold-500));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.welcome-box p {
+  font-size:var(--fs-sm);
+  color:var(--text-tertiary);
+  max-width:480px;
+  margin:0 auto var(--space-6);
+}
+.welcome-box .start-btn {
+  padding:var(--space-3) var(--space-8);
+  border:none;
+  border-radius:var(--radius-md);
+  background:var(--gold-400);
+  color:var(--clay-900);
+  font:inherit;
+  font-size:var(--fs-md);
+  font-weight:var(--fw-bold);
+  cursor:pointer;
+  transition:opacity var(--duration-fast) var(--ease-out);
+}
+.welcome-box .start-btn:hover { opacity:0.9; }
+
+/* ═══════════════════════════════════════════════════════
+   Notification toast
+   ═══════════════════════════════════════════════════════ */
+.toast-container {
+  position:fixed;
+  bottom:var(--space-4);
+  left:50%;
+  transform:translateX(-50%);
+  z-index:1000;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:var(--space-2);
+  pointer-events:none;
+}
+.toast {
+  background:var(--gold-400);
+  color:var(--clay-900);
+  padding:var(--space-3) var(--space-6);
+  border-radius:var(--radius-md);
+  font-size:var(--fs-sm);
+  font-weight:var(--fw-bold);
+  text-align:center;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+  animation: toastIn var(--duration-slow) var(--ease-out) forwards;
+  pointer-events:auto;
+  max-width:90vw;
+}
+@keyframes toastIn {
+  0% { opacity:0; transform:translateY(20px); }
+  100% { opacity:1; transform:translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Utility
+   ═══════════════════════════════════════════════════════ */
+.sr-only {
+  position:absolute;
+  width:1px; height:1px;
+  padding:0; margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ Gate ═══ -->
+<div id="gate">
+  <div class="g-icon">🏛️</div>
+  <div class="g-title">سرزمین</div>
+  <div class="g-sub">۳D Production Playbook — بازی آموزشی</div>
+  <input type="password" class="g-input" id="gp" placeholder="رمز عبور" autocomplete="off">
+  <div class="g-err" id="gerr">رمز اشتباه است</div>
+  <button class="g-btn" id="gbtn">ورود</button>
+</div>
+
+<!-- ═══ Game Content ═══ -->
+<div class="game-wrap">
+
+  <!-- ═══ Top Navigation ═══ -->
+  <header class="top-nav" role="banner">
+    <a href="#" class="top-nav-logo" aria-label="سرزمین — بازی آموزشی">
+      <span class="logo-icon" aria-hidden="true">◆</span>
+      <span>سرزمین</span>
+    </a>
+    <div class="top-nav-title" id="currentMission" aria-live="polite">
+      <span>۰</span> / ۴۰
+    </div>
+    <div class="top-nav-progress">
+      <span class="progress-pct" id="progressPct">۰٪</span>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ Main Content ═══ -->
+  <main class="main" id="main-content">
+    <div class="main-inner">
+
+      <!-- ═══ Dashboard ═══ -->
+      <div class="dashboard" role="region" aria-label="داشبورد پیشرفت">
+        <div class="dash-card">
+          <div class="dash-card-label">گام‌های تکمیل‌شده</div>
+          <div class="dash-card-value" id="dashSteps">۰ / ۴۰</div>
+          <div class="dash-card-sub">از ۴۰ گام</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-label">نشان‌های کسب‌شده</div>
+          <div class="dash-card-value" id="dashBadges">۰ / ۶</div>
+          <div class="dash-card-sub">فصل‌ها + کامل</div>
+        </div>
+      </div>
+
+      <!-- ═══ Tab Bar ═══ -->
+      <div class="tab-bar" role="tablist" aria-label="بخش‌های بازی">
+        <button class="tab-btn active" role="tab" aria-selected="true" data-tab="map" id="tabMap">نقشه مسیر</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="mission" id="tabMission">ماموریت</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="badges" id="tabBadges">نشان‌ها</button>
+      </div>
+
+      <!-- ═══ Welcome (shown when no progress) ═══ -->
+      <div class="welcome-box" id="welcomeBox">
+        <div class="w-icon">🏛️</div>
+        <h2>Sarzamin <span class="gold">۳D Production Playbook</span></h2>
+        <p>۴۰ گام interactive برای یادگیری workflow تولید سه‌بعدی با هوش مصنوعی. ماموریت‌ها را کامل کن، نشان‌ها را کسب کن و استاد شو.</p>
+        <button class="start-btn" id="startBtn">شروع ماجراجویی</button>
+      </div>
+
+      <!-- ═══ Tab: Map ═══ -->
+      <div class="tab-panel active" id="panelMap" role="tabpanel" aria-labelledby="tabMap">
+        <div id="mapContainer"></div>
+      </div>
+
+      <!-- ═══ Tab: Mission ═══ -->
+      <div class="tab-panel" id="panelMission" role="tabpanel" aria-labelledby="tabMission">
+        <div id="missionContainer"></div>
+      </div>
+
+      <!-- ═══ Tab: Badges ═══ -->
+      <div class="tab-panel" id="panelBadges" role="tabpanel" aria-labelledby="tabBadges">
+        <div id="badgesContainer"></div>
+      </div>
+
+      <!-- ═══ Completion message ═══ -->
+      <div class="completion-msg" id="completionMsg">
+        <div class="big-icon">🏆</div>
+        <h2>فراتر از یک استاد!</h2>
+        <p>تمام ۴۰ گام را تکمیل کرده‌ای. تو اکنون یک Sarzamin Production Workflow Master هستی.</p>
+      </div>
+
+      <!-- ═══ Reset ═══ -->
+      <div class="reset-area">
+        <button class="reset-btn" id="resetBtn">بازنشانی پیشرفت</button>
+        <div class="reset-confirm" id="resetConfirm">
+          <span style="font-size:var(--fs-xs);color:var(--text-tertiary);margin-left:var(--space-2);">مطمئنی؟</span>
+          <button class="reset-confirm-yes" id="resetYes">بله، بازنشانی کن</button>
+          <button class="reset-confirm-no" id="resetNo">لغو</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<!-- ═══ Toast container ═══ -->
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   Password Gate (same SHA-256 as index.html)
+   ═══════════════════════════════════════════════════════ */
+(function(){
+  var HASH = "d004880f52f86f9d6116bcf63096431ca6e2cb98b8e8a4d936e3236c46394d94";
+  var SKEY = "sz_auth";
+
+  async function sha256(s) {
+    var e = new TextEncoder();
+    var b = await crypto.subtle.digest("SHA-256", e.encode(s));
+    return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0");}).join("");
+  }
+
+  if (sessionStorage.getItem(SKEY)) {
+    document.body.classList.add("authed");
+    return;
+  }
+
+  async function check() {
+    var v = document.getElementById("gp").value;
+    if (await sha256(v) === HASH) {
+      sessionStorage.setItem(SKEY,"1");
+      document.body.classList.add("authed");
+    } else {
+      document.getElementById("gerr").style.display="block";
+      document.getElementById("gp").value="";
+      document.getElementById("gp").focus();
+    }
+  }
+
+  document.getElementById("gbtn").onclick = check;
+  document.getElementById("gp").onkeydown = function(e) { if(e.key=="Enter") check(); };
+  document.getElementById("gp").focus();
+})();
+</script>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   Sarzamin Playbook — Game Engine
+   ═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+
+  /* ═══ DATA: 5 Chapters x 40 Steps ═══ */
+  /* Full data structure inline to keep single file */
+  var chapters = [
+    {
+      num: 1, label: 'مبانی Workflow', desc: 'قبل از شروع مدل‌سازی',
+      badge: { icon: '🏗️', name: 'معمار پایه', desc: 'همه گام‌های فصل ۱ را کامل کن' },
+      steps: [
+        { id:'s1', title:'هدف این workflow',
+          lesson:'هدف این نیست که به Hermes بگویی «چغازنبیل رو بساز.» هدف این است که یک asset پیچیده را به چند تصمیم کوچک، قابل‌اندازه‌گیری و قابل‌بررسی تقسیم کنی. چرخه اصلی: Brief → Plan → Approve → Implement → Execute → Preview → Review → Accept. قانون اصلی: هر Task فقط یک تغییر بصری قابل‌بررسی دارد.',
+          mission:'یک asset پیچیده (مثلاً یک ساختمان تاریخی) را انتخاب کن. آن را به حداقل ۳ task کوچک break down کن. هر task باید فقط یک تغییر بصری داشته باشد.',
+          quiz:{ q:'قانون اصلی workflow چیست؟', options:['تا جایی که ممکن است سریع مدل را تمام کن','هر Task فقط یک تغییر بصری قابل‌بررسی دارد','همیشه از Agent بخواه خودش تصمیم بگیرد','بعد از هر prompt یک commit بزن'], correct:1 } },
+        { id:'s2', title:'نقش تو چیست؟',
+          lesson:'تو قرار نیست Blender Artist حرفه‌ای باشی. نقش تو Director + Art Director + Technical Director است. باید بتوانی بگویی چه چیزی غلط است، چه چیزی هنوز نباید ساخته شود، آیا نسبت‌ها درست‌اند، آیا silhouette درست است. لازم نیست بدانی کدام bpy API استفاده شود.',
+          mission:'برای یک task فرضی، یک checklist از ۵ سؤالی که به عنوان Director باید بپرسی بنویس.',
+          quiz:{ q:'نقش اصلی تو در این workflow چیست؟', options:['Blender Artist حرفه‌ای','مدیر پروژه و تحلیلگر کد','Director + Art Director + Technical Director','تست‌کننده کیفیت'], correct:2 } },
+        { id:'s3', title:'برای چغازنبیل از کجا شروع کنیم؟',
+          lesson:'از کل چغازنبیل شروع نکن. از شهر دوراونتاش هم شروع نکن. از landscape، درخت، مردم، لباس، آسمان و material هم شروع نکن. اول فقط جواب بده: آیا می‌توانیم جرم اصلی و نسبت‌های زیگورات را به شکل تاریخی قابل‌دفاع بسازیم؟ اولین Task: Primary Blockout.',
+          mission:'یک task blockout برای یک بنای تاریخی تعریف کن. مشخص کن که چه چیزی در این task ساخته می‌شود و چه چیزی عمداً ساخته نمی‌شود.',
+          quiz:{ q:'اولین قدم برای ساخت چغازنبیل چیست؟', options:['ساخت landscape و درختان','Primary Blockout زیگورات','طراحی نورپردازی سینمایی','ساخت تمام جزئیات معماری'], correct:1 } },
+        { id:'s4', title:'اول Prototype یا Production؟',
+          lesson:'برای اولین آزمایش: Prototype Mode. چون هنوز داری feasibility کل workflow را تست می‌کنی. ساختار ساده کافی است: BLENDER_PROJECT.md، references، tasks، scripts، workfiles، renders. وقتی workflow جواب داد، به Production ارتقا بده.',
+          mission:'ساختار پوشه‌های یک پروژه Prototype Mode را طراحی کن. مشخص کن چه چیزهایی در Prototype لازم نیست.',
+          quiz:{ q:'برای اولین آزمایش از چه حالتی استفاده کنیم؟', options:['Production Mode کامل','Prototype Mode ساده','Asset Library Mode','Render Mode'], correct:1 } },
+        { id:'s5', title:'قبل از اولین مدل‌سازی چه چیزی آماده کنم؟',
+          lesson:'A. Historical References (evidence) — B. Visual References (فقط حس تصویر) — C. Measurement Sheet — D. Reconstruction Register با کلاس‌های A=Documented, B=Strong, C=Plausible, D=Speculative, X=Counterfactual',
+          mission:'برای یک شی تاریخی، یک Reconstruction Register با حداقل ۳ عنصر و کلاس‌بندی A تا D بساز.',
+          quiz:{ q:'کلاس C در Reconstruction Register به چه معناست؟', options:['Documented','Strong Reconstruction','Plausible Reconstruction','Speculative'], correct:2 } }
+      ]
+    },
+    {
+      num: 2, label: 'کار با عامل‌ها', desc: 'چگونه با Hermes، Sol و DeepSeek کار کنیم',
+      badge: { icon: '🤖', name: 'ارباب عامل‌ها', desc: 'همه گام‌های فصل ۲ را کامل کن' },
+      steps: [
+        { id:'s6', title:'Project را به Hermes بسپار',
+          lesson:'اولین prompt نباید درخواست مدل‌سازی باشد. به Hermes بگو پروژه را راه‌اندازی کند، نه مدل‌سازی. بعد structure را نگاه کن.',
+          mission:'یک prompt اولیه برای Hermes بنویس که فقط پروژه را راه‌اندازی کند، بدون هیچ مدل‌سازی.',
+          quiz:{ q:'اولین prompt به Hermes باید چه باشد؟', options:['درخواست مدل‌سازی کامل','راه‌اندازی ساختار پروژه بدون مدل‌سازی','درخواست رندر نهایی','تعریف materialها'], correct:1 } },
+        { id:'s7', title:'اولین Task را تعریف کن',
+          lesson:'Task اول: CZ-ZIG-001 — Chogha Zanbil Ziggurat — Blockout. هدف فقط: حجم اصلی، footprint، orientation، تعداد سطوح قابل‌دفاع و نسبت کلی بنا.',
+          mission:'یک Task ID شبیه CZ-ZIG-001 برای پروژه خودت تعریف کن.',
+          quiz:{ q:'Task ID اول برای چغازنبیل چیست؟', options:['CZ-ENV-001','CZ-ZIG-001','CZ-MAT-001','CZ-LIG-001'], correct:1 } },
+        { id:'s8', title:'Task Contract اول',
+          lesson:'Task Contract باید شامل: Task ID، Task Type، Phase، Start Workfile، Objective، Acceptance Criteria، References، Risks/Unknowns باشد.',
+          mission:'یک Task Contract برای CZ-ZIG-001 بنویس با Objective، Acceptance Criteria و یک Risk.',
+          quiz:{ q:'Task Contract شامل کدام یک نیست؟', options:['Task ID و Phase','Acceptance Criteria','نام شخص انجام‌دهنده','References و Risks'], correct:2 } },
+        { id:'s9', title:'Planning Session',
+          lesson:'حالا یک session برای Sol باز کن. اینجا implementation نمی‌خواهی. به Sol بگو plan بدهد، نه کد.',
+          mission:'یک planning prompt برای Sol بنویس که صراحتاً بخواهد plan بدهد و کد ننویسد.',
+          quiz:{ q:'در Planning Session از Sol چه می‌خواهیم؟', options:['کد bpy بنویسد','Strategy و plan بدهد بدون کد','مدل را رندر کند','materialها را تنظیم کند'], correct:1 } },
+        { id:'s10', title:'در Planning Session دنبال چی بگردم؟',
+          lesson:'تو لازم نیست کد را بررسی کنی. بررسی کن: آیا agent ساختار اصلی asset را فهمیده؟ آیا به references اشاره کرده؟ آیا قدم‌هایش منطقی‌اند؟',
+          mission:'یک checklist از ۵ مورد که در planning session باید بررسی کنی تهیه کن.',
+          quiz:{ q:'در Planning Session چه چیزی را نباید بررسی کنی؟', options:['ساختار اصلی asset','اشاره به references','کد bpy نوشته‌شده','منطقی بودن قدم‌ها'], correct:2 } },
+        { id:'s11', title:'چه زمانی Plan را Lock کنم؟',
+          lesson:'وقتی scope دقیق task، approach و method، asset structure، reference fitting strategy، tool requirements، risk identification مشخص باشند. اگر vague بود، Lock نکن.',
+          mission:'لیستی از شرایطی بنویس که قبل از Lock کردن Plan باید مشخص باشند.',
+          quiz:{ q:'کی Plan را Lock کنیم؟', options:['بعد از اولین پیشنهاد agent','وقتی scope، method و risks مشخص هستند','بعد از ساخته شدن مدل','هیچوقت'], correct:1 } },
+        { id:'s12', title:'حالا Session را عوض کن',
+          lesson:'Sol session را ادامه نده. یک session جدید با DeepSeek V4 Flash بساز. DeepSeek فقط باید task plan، references ضروری و acceptance criteria را ببیند.',
+          mission:'توضیح بده چرا باید session را عوض کرد و چرا DeepSeek نباید دوباره plan ریزی کند.',
+          quiz:{ q:'بعد از Lock Plan چه کار کنیم؟', options:['همان Sol session را ادامه دهیم','یک session جدید با DeepSeek باز کنیم','مستقیماً رندر بگیریم','Plan را به agent دیگری بدهیم'], correct:1 } },
+        { id:'s13', title:'Implementation Prompt',
+          lesson:'در session جدید: دقیقاً مشخص کن کدام قدم از plan اجرا شود. هر prompt باید یک قدم مشخص از plan را هدف بگیرد.',
+          mission:'یک implementation prompt برای DeepSeek بنویس که دقیقاً یک قدم از plan را مشخص کند.',
+          quiz:{ q:'Implementation prompt باید چه ویژگی داشته باشد؟', options:['کلی و عمومی باشد','دقیقاً یک قدم از plan را مشخص کند','همه plan را یکجا اجرا کند','فقط بگوید «ادامه بده»'], correct:1 } }
+      ]
+    },
+    {
+      num: 3, label: 'قفل، بررسی و بازخورد', desc: 'چطور مطمئن شویم مسیر درست می‌رویم',
+      badge: { icon: '🔍', name: 'بازرس حرفه‌ای', desc: 'همه گام‌های فصل ۳ را کامل کن' },
+      steps: [
+        { id:'s14', title:'سه نوع Lock',
+          lesson:'۱. Scope Lock — بعد از approve شدن Plan. ۲. Workfile Lock — وقتی agent روی یک WIP کار می‌کند. ۳. Approval Lock — وقتی phase قبول شد و snapshot نباید تغییر کند.',
+          mission:'برای هرکدام از سه نوع Lock یک سناریوی واقعی مثال بزن.',
+          quiz:{ q:'Scope Lock چه موقع اعمال می‌شود؟', options:['وقتی agent دارد کد می‌نویسد','بعد از approve شدن Plan','بعد از اتمام کل پروژه','وقتی فایل قفل می‌شود'], correct:1 } },
+        { id:'s15', title:'اولین خروجی چه شکلی باید باشد؟',
+          lesson:'احتمالاً زشت. و این کاملاً درست است. انتظار نور سینمایی، بافت خشتی جذاب، erosion، خاک، درخت، آدم، آسمان را نداشته باش.',
+          mission:'سه چیزی که در اولین blockout نباید انتظار داشته باشی را نام ببر.',
+          quiz:{ q:'اولین خروجی Blockout چه شکلی است؟', options:['کامل و حرفه‌ای','احتمالاً زشت و این درست است','نزدیک به نهایی','رندر سینمایی'], correct:1 } },
+        { id:'s16', title:'چطور Review کنم؟',
+          lesson:'۱. Silhouette — اگر غلط است هیچ چیز دیگری مهم نیست. ۲. Proportions. ۳. Scale. ۴. Position/Orientation. ۵. Missing/Present elements.',
+          mission:'یک review checklist برای blockout بنویس که اولویت اول silhouette باشد.',
+          quiz:{ q:'اولین چیزی که در Review بررسی می‌کنیم چیست؟', options:['نورپردازی','بافت material','Silhouette','جزئیات ریز'], correct:2 } },
+        { id:'s17', title:'Feedback بد و خوب',
+          lesson:'بد: «خیلی عجیب شده. درستش کن.» خوب: «نسبت طبقات با reference تطابق ندارد. طبقه دوم باید ۲۰٪ باریک‌تر باشد.»',
+          mission:'یک feedback بد را به feedback خوب تبدیل کن. دقیقاً مشخص کن چه چیزی باید تغییر کند.',
+          quiz:{ q:'کدام feedback مؤثرتر است؟', options:['«درستش کن»','«حسش خوب نیست»','«نسبت طبقات با reference تطابق ندارد، لطفاً عرض را کاهش بده»','«یه چیزش بده»'], correct:2 } },
+        { id:'s18', title:'Correction Strategy',
+          lesson:'Correction را در همان Session انجام بده. بیشتر از دو correction برای یک mismatch ساختاری انجام نده. اگر دو بار خراب کرد: Stop و diagnose.',
+          mission:'یک الگوریتم تصمیم‌گیری برای وقتی agent دو بار خراب کرده طراحی کن.',
+          quiz:{ q:'بعد از دو correction ناموفق چه کنیم؟', options:['دوباره امتحان کن','Stop و diagnose مشکل','agent را عوض کن','از اول شروع کن'], correct:1 } },
+        { id:'s19', title:'کی Task تمام شده؟',
+          lesson:'وقتی acceptance criteria همین Task پاس شده. نه وقتی مدل کامل شده. مثلاً اگر Blockout درست شد: CZ-ZIG-001 تمام است.',
+          mission:'برای یک Task سه acceptance criteria بنویس.',
+          quiz:{ q:'یک Task چه زمانی تمام می‌شود؟', options:['وقتی مدل کامل و زیبا شد','وقتی acceptance criteria آن Task پاس شد','بعد از ۲۴ ساعت','وقتی client راضی باشد'], correct:1 } },
+        { id:'s20', title:'بعد از قبول Task چه کنم؟',
+          lesson:'Prototype: ذخیره کن و review notes. بعد source/script/task files را checkpoint یا commit کن. Production: WIP → REVIEW → validate → APPROVED → commit.',
+          mission:'یک checklist از کارهای بعد از قبول Task بنویس.',
+          quiz:{ q:'بعد از قبول Task در Prototype Mode چه می‌کنیم؟', options:['همینطور رها می‌کنیم','ذخیره و checkpoint می‌کنیم','کل پروژه را پاک می‌کنیم','agent را عوض می‌کنیم'], correct:1 } },
+        { id:'s21', title:'Commit کی بزنم؟',
+          lesson:'بعد از Accepted Task Boundary. نه بعد از هر prompt. نه بعد از هر render. مثال: feat(cz): approve ziggurat blockout.',
+          mission:'سه commit message مثال برای مراحل مختلف یک پروژه ۳D بنویس.',
+          quiz:{ q:'کی commit می‌زنیم؟', options:['بعد از هر prompt','بعد از Accepted Task Boundary','بعد از هر رندر','هر ۱۰ دقیقه'], correct:1 } },
+        { id:'s22', title:'Session جدید کی بسازم؟',
+          lesson:'همان Session بمان اگر: همان Task است، feedback می‌دهی. Session جدید بساز اگر: phase تمام شد، task جدید، از Sol به DeepSeek رفتی، objective تغییر کرد.',
+          mission:'سه موقعیت برای Session جدید و سه موقعیت برای ماندن در همان Session را لیست کن.',
+          quiz:{ q:'کی Session جدید می‌سازیم؟', options:['همان Task و feedback','correction اول','phase تمام شده و task جدید','همان objective'], correct:2 } }
+      ]
+    },
+    {
+      num: 4, label: 'خط تولید', desc: 'از Task دوم تا Shot نهایی',
+      badge: { icon: '🏭', name: 'مدیر خط تولید', desc: 'همه گام‌های فصل ۴ را کامل کن' },
+      steps: [
+        { id:'s23', title:'Task دوم چغازنبیل',
+          lesson:'بعد از قبول Blockout: CZ-ZIG-002 — Phase: Primary Forms. Start Workfile: accepted blockout. دوباره: new planner session → plan → lock → new implementation session.',
+          mission:'Task دوم را برای پروژه خودت تعریف کن.',
+          quiz:{ q:'Task دوم چغازنبیل چیست؟', options:['CZ-ZIG-002 — Primary Forms','CZ-ENV-001 — Environment','CZ-MAT-001 — Materials','CZ-LIG-001 — Lighting'], correct:0 } },
+        { id:'s24', title:'کل مراحل Asset چغازنبیل',
+          lesson:'Phase 1 Blockout→ Phase 2 Primary Forms→ Phase 3 Secondary Details→ Phase 4 Materials & UV. هر فاز یک Task جدا.',
+          mission:'فازهای یک asset را از Blockout تا Material بنویس.',
+          quiz:{ q:'Phase 2 (Primary Forms) شامل چه چیزی است؟', options:['فقط footprint','main masses و levels','جزئیات معماری','نورپردازی'], correct:1 } },
+        { id:'s25', title:'محیط را همزمان نساز',
+          lesson:'بعد از خود زیگورات، Taskهای جدا: CZ-ENV-001 Site terrain, CZ-ENV-002 Vegetation, CZ-ENV-003 Surrounding structures.',
+          mission:'سه Task محیطی که بعد از اتمام بنای اصلی باید ساخته شوند را نام ببر.',
+          quiz:{ q:'محیط را چه زمانی می‌سازیم؟', options:['همزمان با بنا','بعد از اتمام بنای اصلی','قبل از شروع بنا','در phase 1'], correct:1 } },
+        { id:'s26', title:'Blender تا کجا؟ Unreal از کجا؟',
+          lesson:'Blender: historical reconstruction، precise modeling، asset preparation. Unreal: world assembly، landscape، lighting، cinematic blocking، final shot.',
+          mission:'یک جدول از کارهای Blender vs Unreal تهیه کن.',
+          quiz:{ q:'کدام کار در Blender انجام می‌شود؟', options:['World assembly','Cinematic blocking','Historical asset reconstruction','Landscape'], correct:2 } },
+        { id:'s27', title:'ساخت اولین شات هم همین workflow را دارد',
+          lesson:'Shot Brief → Scene Blocking → Camera / Lens → Timing → Character Blocking → Lighting → Environment Polish → Final Render. هر مرحله یک task مجزا.',
+          mission:'مراحل ساخت یک shot را لیست کن.',
+          quiz:{ q:'اولین مرحله در ساخت یک shot چیست؟', options:['Final Render','Lighting','Shot Brief و Scene Blocking','Character Animation'], correct:2 } },
+        { id:'s28', title:'برای Camera Task چی بگویم؟',
+          lesson:'Use the approved environment and assets. Set up a CineCamera. Focal length: 35mm. Height: 170cm (human eye level). Subject: ziggurat. Do not move the asset.',
+          mission:'یک prompt کامل برای Camera Task بنویس.',
+          quiz:{ q:'در Camera Task چه چیزی را نباید تغییر دهی؟', options:['Focal length','Asset position','Camera height','Composition'], correct:1 } },
+        { id:'s29', title:'Planner: Sol یا Astra؟',
+          lesson:'Sol — default برای task decomposition، architecture strategy، camera planning. Astra — برای geometry-heavy problem، spatial relationships، complex architectural reasoning.',
+          mission:'دو سناریو: یکی مناسب Sol و یکی مناسب Astra.',
+          quiz:{ q:'کی از Astra استفاده کنیم؟', options:['برای camera planning','برای task decomposition','برای geometry-heavy و spatial reasoning','برای pipeline decisions'], correct:2 } },
+        { id:'s30', title:'DeepSeek را برای چه چیزی نگه دارم؟',
+          lesson:'برای execution: bpy scripts، primitive construction، transforms، arrays، collection management، export. DeepSeek نباید Architect شود.',
+          mission:'سه کار برای DeepSeek و سه کار که نباید به DeepSeek بسپاری.',
+          quiz:{ q:'DeepSeek برای چه کاری مناسب است؟', options:['معماری پروژه','Planning','اجرای bpy scripts','تصمیم‌گیری strategic'], correct:2 } },
+        { id:'s31', title:'چه زمانی Sol را برای Implementation استفاده کنم؟',
+          lesson:'فقط وقتی implementation سخت شده: procedural geometry پیچیده، topology-sensitive work، boolean interaction سخت. نه صرفاً چون asset بزرگ است.',
+          mission:'دو موقعیت که Sol برای implementation بهتر از DeepSeek است.',
+          quiz:{ q:'کی Sol را برای Implementation استفاده کنیم؟', options:['همیشه','وقتی asset بزرگ است','وقتی implementation پیچیده و topology-sensitive است','هرگز'], correct:2 } }
+      ]
+    },
+    {
+      num: 5, label: 'مهارت و تمرین', desc: 'نوشتن Prompt مؤثر و شروع کار واقعی',
+      badge: { icon: '⚡', name: 'استاد نهایی', desc: 'همه گام‌های فصل ۵ را کامل کن' },
+      steps: [
+        { id:'s32', title:'صرفه‌جویی در Token',
+          lesson:'هر Session فقط منابع لازم را بده. contexts کوتاه و متمرکز. هر چه context کمتر، agent دقیق‌تر.',
+          mission:'برای یک task خاص، لیست referenceهای لازم و غیرلازم را بنویس.',
+          quiz:{ q:'چطور در مصرف Token صرفه‌جویی کنیم؟', options:['همه referenceها را یکجا بدهیم','فقط منابع لازم برای همان Task را بدهیم','هیچ referenceای ندهیم','تکرار کنیم'], correct:1 } },
+        { id:'s33', title:'Prompt Anatomy',
+          lesson:'هر prompt اجرایی باید ۷ بخش داشته باشد: Skill context, Task objective, Workfile, Specific instruction, Constraints, Success criteria, Output format.',
+          mission:'یک prompt با ۷ بخش بنویس.',
+          quiz:{ q:'یک prompt اجرایی باید حداقل چند بخش داشته باشد؟', options:['۳','۵','۷','۱۰'], correct:2 } },
+        { id:'s34', title:'Promptهایی که نباید استفاده کنی',
+          lesson:'«مدل رو بهتر کن» — بد است. «جزئیات بیشتری بده» — بد است. «خوب نیست دوباره انجام بده» — بد است. vague هستند.',
+          mission:'سه نمونه prompt بد بنویس و توضیح بده چرا vague است.',
+          quiz:{ q:'چرا «مدل رو بهتر کن» prompt بدی است؟', options:['کوتاه است','Vague است و مشخص نمی‌کند چه چیزی باید تغییر کند','دستوری نیست','از کلمات انگلیسی استفاده نشده'], correct:1 } },
+        { id:'s35', title:'به‌جای آن بگو',
+          lesson:'«The primary mass is accepted. Now add the secondary mass: a 3-step stairway on the south face. Each step: 2m wide, 0.4m high, 0.6m deep.» Specific, measurable, executable.',
+          mission:'سه prompt بد را به promptهای خوب تبدیل کن.',
+          quiz:{ q:'یک prompt خوب چه ویژگی‌هایی دارد؟', options:['کوتاه و کلی','Specific, measurable, executable','احساسی و هنری','تکرار دستورات قبلی'], correct:1 } },
+        { id:'s36', title:'مفاهیم Blender که باید بدانی',
+          lesson:'Geometry: mesh, vertex/edge/face, transform, origin, scale. Modeling: extrude, inset, bevel, boolean, array, mirror, modifier. Camera: focal length, sensor, perspective.',
+          mission:'۱۰ مفهوم کلیدی Blender را با یک جمله توضیح بده.',
+          quiz:{ q:'کدام یک مفهوم پایه‌ای Geometry نیست؟', options:['Vertex','Edge','Face','Material node'], correct:3 } },
+        { id:'s37', title:'مهم‌ترین مهارت',
+          lesson:'تشخیص اینکه چه چیزی غلط است. نه: «حسش خوب نیست.» بلکه: «دوربین زیادی بالاست و حس حضور انسان از بین رفته.»',
+          mission:'یک جمله vague را به تشخیص دقیق تبدیل کن.',
+          quiz:{ q:'مهم‌ترین مهارت در این workflow چیست؟', options:['مدل‌سازی سریع','تشخیص دقیق مشکل','نوشتن کد bpy','رندر حرفه‌ای'], correct:1 } },
+        { id:'s38', title:'روز اول واقعی چغازنبیل',
+          lesson:'Session 1 — Setup: Initialize project. Session 2 — Planning با Sol برای CZ-ZIG-001. Lock plan. Session 3 — Implementation با DeepSeek.',
+          mission:'برنامه روز اول را با سه session مشخص بنویس.',
+          quiz:{ q:'روز اول چغازنبیل با چه کاری شروع می‌شود؟', options:['مدل‌سازی مستقیم','Initialize prototype و setup','رندر نهایی','خرید assets'], correct:1 } },
+        { id:'s39', title:'روز دوم',
+          lesson:'Task تازه: CZ-ZIG-002 — Primary Forms. Planner session تازه. سپس implementation session تازه. هر روز یک چرخه کامل.',
+          mission:'روز دوم را برنامه‌ریزی کن.',
+          quiz:{ q:'روز دوم چه کار می‌کنیم؟', options:['همان روز اول تکرار','Task جدید: CZ-ZIG-002 — Primary Forms','کل پروژه را رندر می‌کنیم','تعطیل است'], correct:1 } },
+        { id:'s40', title:'تعریف موفقیت',
+          lesson:'موفقیت روز اول: یک Blockout تاریخی کنترل‌شده دارم که می‌دانم از کجا آمده، چه چیزهایش قطعی است، چه چیزهایش نامطمئن است و می‌توانم فردا ادامه‌اش بدهم.',
+          mission:'تعریف خودت از موفقیت برای یک روز کار روی پروژه ۳D بنویس.',
+          quiz:{ q:'موفقیت روز اول در این workflow چیست؟', options:['مدل photorealistic کامل','یک Blockout کنترل‌شده با مشخص بودن قطعیات و نامطمئن‌ها','۱۰۰ تا asset','رندر سینمایی'], correct:1 } }
+      ]
+    }
+  ];
+
+  /* ═══ Storage ═══ */
+  var STORAGE_KEY = 'sz_game_v1';
+
+  function defaultState() {
+    return { version: 1, completed: [], currentStep: null, lastUpdated: Date.now() };
+  }
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return defaultState();
+      var data = JSON.parse(raw);
+      if (!data || typeof data !== 'object' || data.version !== 1) return defaultState();
+      if (!Array.isArray(data.completed)) data.completed = [];
+      var validIds = {};
+      chapters.forEach(function(ch) { ch.steps.forEach(function(s) { validIds[s.id] = true; }); });
+      data.completed = data.completed.filter(function(id) { return validIds[id]; });
+      if (data.currentStep && !validIds[data.currentStep]) data.currentStep = null;
+      data.lastUpdated = Date.now();
+      return data;
+    } catch(e) { return defaultState(); }
+  }
+
+  function saveState(state) {
+    try { state.lastUpdated = Date.now(); localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  }
+
+  var state = loadState();
+
+  function getAllSteps() {
+    var all = [];
+    chapters.forEach(function(ch) { ch.steps.forEach(function(s) { all.push(s); }); });
+    return all;
+  }
+
+  function getStepById(id) {
+    var all = getAllSteps();
+    for (var i = 0; i < all.length; i++) { if (all[i].id === id) return all[i]; }
+    return null;
+  }
+
+  function getStepGlobalIndex(id) {
+    var all = getAllSteps();
+    for (var i = 0; i < all.length; i++) { if (all[i].id === id) return i; }
+    return -1;
+  }
+
+  function isCompleted(id) { return state.completed.indexOf(id) !== -1; }
+
+  function getCurrentStepId() {
+    if (state.currentStep && getStepById(state.currentStep)) return state.currentStep;
+    var all = getAllSteps();
+    for (var i = 0; i < all.length; i++) {
+      if (state.completed.indexOf(all[i].id) === -1) return all[i].id;
+    }
+    return all[all.length - 1].id;
+  }
+
+  function getEarnedBadges() {
+    var earned = [];
+    chapters.forEach(function(ch) {
+      if (ch.steps.every(function(s) { return state.completed.indexOf(s.id) !== -1; })) {
+        earned.push('ch' + ch.num);
+      }
+    });
+    if (getAllSteps().every(function(s) { return state.completed.indexOf(s.id) !== -1; })) {
+      earned.push('master');
+    }
+    return earned;
+  }
+
+  function getStepChapter(id) {
+    for (var ci = 0; ci < chapters.length; ci++) {
+      for (var si = 0; si < chapters[ci].steps.length; si++) {
+        if (chapters[ci].steps[si].id === id) return chapters[ci];
+      }
+    }
+    return null;
+  }
+
+  /* ═══ Toast Notifications ═══ */
+  function showToast(msg) {
+    var container = document.getElementById('toastContainer');
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    container.appendChild(t);
+    setTimeout(function() {
+      t.style.opacity = '0';
+      t.style.transition = 'opacity 0.3s';
+      setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 300);
+    }, 3000);
+  }
+
+  /* ═══ Update Dashboard ═══ */
+  function updateDashboard() {
+    var total = getAllSteps().length;
+    var done = state.completed.length;
+    document.getElementById('dashSteps').textContent = done + ' / ' + total;
+    var badges = getEarnedBadges();
+    document.getElementById('dashBadges').textContent = badges.length + ' / 6';
+    var pct = Math.round((done / total) * 100);
+    document.getElementById('progressPct').textContent = pct + '٪';
+    document.getElementById('progressFill').style.width = pct + '%';
+    var currentId = getCurrentStepId();
+    var idx = getStepGlobalIndex(currentId);
+    var step = getStepById(currentId);
+    var ch = getStepChapter(currentId);
+    var navTitle = document.getElementById('currentMission');
+    if (step && ch) {
+      navTitle.innerHTML = '<span>' + (idx + 1) + '</span> / 40 — ' + ch.label;
+    }
+    var compMsg = document.getElementById('completionMsg');
+    if (done === total) compMsg.classList.add('show');
+    else compMsg.classList.remove('show');
+  }
+
+  /* ═══ Render: Workflow Map ═══ */
+  function renderMap() {
+    var container = document.getElementById('mapContainer');
+    var currentId = getCurrentStepId();
+    var html = '';
+    chapters.forEach(function(ch) {
+      var earnedBadges = getEarnedBadges();
+      var hasBadge = earnedBadges.indexOf('ch' + ch.num) !== -1;
+      html += '<div class="map-chapter"><div class="map-chapter-header">';
+      html += '<span class="map-chapter-num">' + String(ch.num).padStart(2,'0') + '</span>';
+      html += '<span class="map-chapter-title">' + ch.label + '</span>';
+      html += '<span class="map-chapter-badge' + (hasBadge ? ' earned' : '') + '">';
+      html += hasBadge ? '✅ ' + ch.badge.name : '🔒 ' + ch.steps.length + ' گام';
+      html += '</span></div><div class="map-steps" role="list">';
+      ch.steps.forEach(function(s) {
+        var done = state.completed.indexOf(s.id) !== -1;
+        var active = s.id === currentId;
+        var cls = 'map-step';
+        if (done) cls += ' completed';
+        if (active) cls += ' active';
+        var icon = done ? '✅' : (active ? '▶️' : '📋');
+        html += '<div class="' + cls + '" role="listitem" data-step="' + s.id + '" tabindex="0"' +
+          ' aria-label="' + (done ? 'تکمیل‌شده: ' : '') + s.title + '">';
+        html += '<span class="step-icon">' + icon + '</span>';
+        html += '<span class="step-num">' + String(getStepGlobalIndex(s.id) + 1).padStart(2,'0') + '</span>';
+        html += '<span class="step-label">' + s.title.substring(0, 12) + '</span></div>';
+      });
+      html += '</div></div>';
+    });
+    container.innerHTML = html;
+    container.querySelectorAll('.map-step').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var sid = this.getAttribute('data-step');
+        if (sid) { state.currentStep = sid; saveState(state); renderAll(); switchTab('mission'); }
+      });
+      el.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          var sid = this.getAttribute('data-step');
+          if (sid) { state.currentStep = sid; saveState(state); renderAll(); switchTab('mission'); }
+        }
+      });
+    });
+  }
+
+  /* ═══ Render: Mission Panel ═══ */
+  function renderMission() {
+    var container = document.getElementById('missionContainer');
+    var currentId = getCurrentStepId();
+    var step = getStepById(currentId);
+    if (!step) { container.innerHTML = '<p style="text-align:center;color:var(--text-tertiary);padding:var(--space-8);">هیچ ماموریتی انتخاب نشده.</p>'; return; }
+    var ch = getStepChapter(currentId);
+    var idx = getStepGlobalIndex(currentId);
+    var done = state.completed.indexOf(currentId) !== -1;
+    var all = getAllSteps();
+    var html = '';
+    html += '<div class="mission-panel"><div class="mission-header">';
+    html += '<span class="mission-chapter">فصل ' + ch.num + '</span>';
+    html += '<span class="mission-step-num">گام ' + String(idx + 1).padStart(2,'0') + '</span>';
+    html += '<span class="mission-title">' + step.title + '</span>';
+    html += '<span class="mission-status ' + (done ? 'done' : 'pending') + '">' + (done ? '✅ کامل' : '⏳ در انتظار') + '</span>';
+    html += '</div>';
+    html += '<div class="mission-lesson">' + step.lesson + '</div>';
+    html += '<div class="mission-task"><div class="mission-task-label">🎯 ماموریت</div><div class="mission-task-text">' + step.mission + '</div></div>';
+    if (!done) {
+      html += renderQuiz(step);
+    } else {
+      html += '<div style="margin-top:var(--space-4);padding:var(--space-4);background:rgba(61,138,84,0.06);border:1px solid rgba(61,138,84,0.15);border-radius:var(--radius-sm);text-align:center;"><span style="color:var(--green-400);font-weight:var(--fw-bold);font-size:var(--fs-sm);">✅ این گام قبلاً تکمیل شده است</span></div>';
+    }
+    html += '</div>';
+    var prevIdx = idx - 1;
+    var nextIdx = idx + 1;
+    html += '<div style="display:flex;gap:var(--space-3);justify-content:space-between;">';
+    if (prevIdx >= 0) {
+      html += '<button class="quiz-btn" id="prevStepBtn">→ گام قبلی</button>';
+    } else { html += '<div></div>'; }
+    if (nextIdx < all.length) {
+      html += '<button class="quiz-btn" id="nextStepBtn">گام بعدی ←</button>';
+    } else { html += '<div></div>'; }
+    html += '</div>';
+    container.innerHTML = html;
+    if (!done) setupQuiz(step, currentId);
+    var prevBtn = document.getElementById('prevStepBtn');
+    var nextBtn = document.getElementById('nextStepBtn');
+    if (prevBtn) prevBtn.addEventListener('click', function() { state.currentStep = all[prevIdx].id; saveState(state); renderAll(); });
+    if (nextBtn) nextBtn.addEventListener('click', function() { state.currentStep = all[nextIdx].id; saveState(state); renderAll(); });
+  }
+
+  /* ═══ Quiz Renderer ═══ */
+  function renderQuiz(step) {
+    var letters = ['۱','۲','۳','۴'];
+    var html = '<div class="quiz-box" id="quizBox"><div class="quiz-question">❓ ' + step.quiz.q + '</div>';
+    html += '<div class="quiz-options" id="quizOptions">';
+    step.quiz.options.forEach(function(opt, oi) {
+      html += '<div class="quiz-option" data-opt="' + oi + '" role="button" tabindex="0">';
+      html += '<span class="opt-label">' + letters[oi] + '</span><span>' + opt + '</span></div>';
+    });
+    html += '</div><div class="quiz-feedback" id="quizFeedback"></div>';
+    html += '<button class="quiz-btn" id="quizSubmitBtn" disabled>تأیید پاسخ</button></div>';
+    return html;
+  }
+
+  /* ═══ Quiz Logic ═══ */
+  var selectedOption = null;
+
+  function setupQuiz(step, stepId) {
+    selectedOption = null;
+    var opts = document.querySelectorAll('#quizOptions .quiz-option');
+    var submitBtn = document.getElementById('quizSubmitBtn');
+    var feedback = document.getElementById('quizFeedback');
+
+    function clearSelected() { opts.forEach(function(o) { o.classList.remove('selected'); }); }
+
+    opts.forEach(function(o) {
+      o.addEventListener('click', function() {
+        clearSelected(); this.classList.add('selected');
+        selectedOption = parseInt(this.getAttribute('data-opt'));
+        submitBtn.disabled = false;
+      });
+      o.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault(); clearSelected(); this.classList.add('selected');
+          selectedOption = parseInt(this.getAttribute('data-opt'));
+          submitBtn.disabled = false;
+        }
+      });
+    });
+
+    submitBtn.onclick = function() {
+      if (selectedOption === null) return;
+      var correct = step.quiz.correct;
+      opts.forEach(function(o) {
+        o.classList.add('disabled');
+        var oi = parseInt(o.getAttribute('data-opt'));
+        if (oi === correct) o.classList.add('correct');
+        if (oi === selectedOption && oi !== correct) o.classList.add('wrong');
+      });
+      if (selectedOption === correct) {
+        feedback.className = 'quiz-feedback correct show';
+        feedback.textContent = '✅ درست! پاسخ صحیح است.';
+        if (state.completed.indexOf(stepId) === -1) {
+          state.completed.push(stepId);
+        }
+        saveState(state);
+        var before = getEarnedBadges();
+        renderAll();
+        var after = getEarnedBadges();
+        after.forEach(function(b) {
+          if (before.indexOf(b) === -1) {
+            if (b === 'master') showToast('🏆 نشان «فراتر از یک استاد» را کسب کردی!');
+            else {
+              var chNum = parseInt(b.replace('ch',''));
+              if (chapters[chNum - 1]) showToast('🏅 نشان «' + chapters[chNum - 1].badge.name + '» را کسب کردی!');
+            }
+          }
+        });
+      } else {
+        feedback.className = 'quiz-feedback wrong show';
+        feedback.textContent = '❌ پاسخ نادرست. دوباره تلاش کن.';
+        setTimeout(function() {
+          opts.forEach(function(o) { o.classList.remove('disabled','correct','wrong','selected'); });
+          selectedOption = null; submitBtn.disabled = true;
+          feedback.className = 'quiz-feedback';
+        }, 1500);
+      }
+    };
+  }
+
+  /* ═══ Render: Badges ═══ */
+  function renderBadges() {
+    var container = document.getElementById('badgesContainer');
+    var earned = getEarnedBadges();
+    var html = '<div class="badges-grid">';
+    chapters.forEach(function(ch) {
+      var isEarned = earned.indexOf('ch' + ch.num) !== -1;
+      html += '<div class="badge-card ' + (isEarned ? 'earned' : 'locked') + '">';
+      html += '<div class="badge-icon">' + (isEarned ? ch.badge.icon : '🔒') + '</div>';
+      html += '<div class="badge-name">' + (isEarned ? ch.badge.name : '???') + '</div>';
+      html += '<div class="badge-desc">' + ch.badge.desc + '</div></div>';
+    });
+    var masterEarned = earned.indexOf('master') !== -1;
+    html += '<div class="badge-card ' + (masterEarned ? 'earned' : 'locked') + '">';
+    html += '<div class="badge-icon">' + (masterEarned ? '🏆' : '🔒') + '</div>';
+    html += '<div class="badge-name">' + (masterEarned ? 'فراتر از استاد' : '???') + '</div>';
+    html += '<div class="badge-desc">تمام ۴۰ گام را کامل کن</div></div>';
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  /* ═══ Tab System ═══ */
+  var currentTab = 'map';
+
+  function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(function(b) {
+      b.classList.toggle('active', b.getAttribute('data-tab') === tab);
+      b.setAttribute('aria-selected', b.getAttribute('data-tab') === tab ? 'true' : 'false');
+    });
+    document.querySelectorAll('.tab-panel').forEach(function(p) {
+      p.classList.toggle('active', p.id === 'panel' + tab.charAt(0).toUpperCase() + tab.slice(1));
+    });
+    if (tab === 'map') renderMap();
+    else if (tab === 'mission') renderMission();
+    else if (tab === 'badges') renderBadges();
+  }
+
+  function renderAll() {
+    updateDashboard();
+    if (currentTab === 'map') renderMap();
+    else if (currentTab === 'mission') renderMission();
+    else if (currentTab === 'badges') renderBadges();
+  }
+
+  function resetProgress() {
+    state = defaultState();
+    saveState(state);
+    renderAll();
+    switchTab('map');
+    document.getElementById('welcomeBox').style.display = 'block';
+  }
+
+  /* ═══ Init ═══ */
+  function init() {
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() { switchTab(this.getAttribute('data-tab')); });
+    });
+    var welcome = document.getElementById('welcomeBox');
+    if (state.completed.length > 0) welcome.style.display = 'none';
+    else welcome.style.display = 'block';
+    document.getElementById('startBtn').addEventListener('click', function() {
+      welcome.style.display = 'none';
+      state.currentStep = getAllSteps()[0].id;
+      saveState(state);
+      switchTab('mission');
+    });
+    document.getElementById('resetBtn').addEventListener('click', function() {
+      document.getElementById('resetConfirm').classList.add('show');
+    });
+    document.getElementById('resetYes').addEventListener('click', function() {
+      document.getElementById('resetConfirm').classList.remove('show');
+      resetProgress();
+    });
+    document.getElementById('resetNo').addEventListener('click', function() {
+      document.getElementById('resetConfirm').classList.remove('show');
+    });
+    updateDashboard();
+    renderMap();
+  }
+
+  init();
+})();
+</script>
+
+</body>
+</html>
